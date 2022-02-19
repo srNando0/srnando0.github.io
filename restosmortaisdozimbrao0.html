@@ -7,14 +7,7 @@
 	<div id="vpl_results_accordion" class="ui-accordion ui-widget ui-helper-reset" role="tablist"><h4 class="vpl_ide_accordion_t_grade ui-accordion-header ui-corner-top ui-accordion-header-collapsed ui-corner-all ui-state-default ui-accordion-icons" role="tab" id="ui-id-57" aria-controls="ui-id-29" aria-selected="false" aria-expanded="false" tabindex="-1"><span class="ui-accordion-header-icon ui-icon ui-icon-triangle-1-e"></span>Nota proposta: 0 / 100</h4><div class="vpl_ide_accordion_c_grade ui-accordion-content ui-corner-bottom ui-helper-reset ui-widget-content" style="display: none; height: 51.9671px; overflow: auto;" id="ui-id-29" aria-labelledby="ui-id-57" role="tabpanel" aria-hidden="true"></div><div class="vpl_ide_accordion_t_variables"></div><div class="vpl_ide_accordion_c_variables"></div><div class="vpl_ide_accordion_t_compilation"></div><div class="vpl_ide_accordion_c_compilation"></div><h4 class="vpl_ide_accordion_t_comments ui-accordion-header ui-corner-top ui-state-default ui-accordion-header-active ui-state-active ui-accordion-icons" role="tab" id="ui-id-58" aria-controls="ui-id-59" aria-selected="true" aria-expanded="true" tabindex="0"><span class="ui-accordion-header-icon ui-icon ui-icon-triangle-1-s"></span>Comentários</h4><div class="ui-widget vpl_ide_accordion_c_comments ui-accordion-content ui-corner-bottom ui-helper-reset ui-widget-content ui-accordion-content-active" style="overflow: auto;" id="ui-id-59" aria-labelledby="ui-id-58" role="tabpanel" aria-hidden="false"><b class="ui-widget-header ui-corner-all">Failed tests</b><br><div>Test 1: #1 Declaração de variáveis<br>Test 2: #2 Atribuição e contas<br>Test 3: #3 if sem else<br>Test 4: #4 if com else<br>Test 5: #5 Objetos e arrays<br>Test 6: #6 while<br>Test 7: #7 for<br>Test 8: #8 multiplicação de matrizes<br>Test 9: #9 Variável não declarada<br>Test 10: #10 Declaração duplicada da mesma variável<br></div><b class="ui-widget-header ui-corner-all">Test 1: #1 Declaração de variáveis </b><br><div>Incorrect program output<br> --- Input ---<br><pre><i>let a = {}, b = [], c = 9
 		let __9 = 1.1; let _ = "abc"
 		
-		</i></pre><br> --- Program output ---<br><pre><i>=== Console ===
-		=== Erro: Instrução inválida: : ===
-		=== Instrução: 2 ===
-		=== Vars ===
-		|{ }|
-		=== Pilha ===
-		|let|
-		|Erro|
+		
 		</i></pre><br> --- Expected output (exact text)---<br><pre><i>=== Console ===
 		=== Vars ===
 		|{ _: abc; __9: 1.1; a: { }; b: [ ]; c: 9; }|
@@ -24,14 +17,7 @@
 		let c = "hello ";
 		c += ", " + 'world' + '!';
 		
-		</i></pre><br> --- Program output ---<br><pre><i>=== Console ===
-		=== Erro: Instrução inválida: : ===
-		=== Instrução: 2 ===
-		=== Vars ===
-		|{ }|
-		=== Pilha ===
-		|let|
-		|Erro|
+		
 		</i></pre><br> --- Expected output (text)---<br><pre><i>=== Console ===
 		=== Vars ===
 		|{ a: 1; b: 9.1; c: hello , world!; x: 9.1; }|
@@ -44,14 +30,7 @@
 		if( a &lt; b + 1 )
 		  d = "a e' menor";
 		
-		</i></pre><br> --- Program output ---<br><pre><i>=== Console ===
-		=== Erro: Instrução inválida: : ===
-		=== Instrução: 2 ===
-		=== Vars ===
-		|{ }|
-		=== Pilha ===
-		|let|
-		|Erro|
+		
 		</i></pre><br> --- Expected output (exact text)---<br><pre><i>=== Console ===
 		=== Vars ===
 		|{ a: 5; b: 5; c: undefined; d: a e' menor; }|
@@ -66,14 +45,7 @@
 		}
 		else
 		  resultado = "Deu ruim!";
-		</i></pre><br> --- Program output ---<br><pre><i>=== Console ===
-		=== Erro: Instrução inválida: : ===
-		=== Instrução: 2 ===
-		=== Vars ===
-		|{ }|
-		=== Pilha ===
-		|let|
-		|Erro|
+		
 		</i></pre><br> --- Expected output (exact text)---<br><pre><i>=== Console ===
 		=== Vars ===
 		|{ a: ABA; c: CATE; resultado: a vem antes de c: ABA&lt;CATE; }|
@@ -87,14 +59,7 @@
 		obj.nums[3] += 1
 		obj.nums[i++ + 3] = 45;
 		obj['nom' + 'e'] = obj.nome + "!";
-		</i></pre><br> --- Program output ---<br><pre><i>=== Console ===
-		=== Erro: Instrução inválida: : ===
-		=== Instrução: 2 ===
-		=== Vars ===
-		|{ }|
-		=== Pilha ===
-		|let|
-		|Erro|
+		
 		</i></pre><br> --- Expected output (exact text)---<br><pre><i>=== Console ===
 		=== Vars ===
 		|{ i: -1; obj: { nome: Manoel!; nums: [ 0: 12; 1: 45; 2: undefined; 3: 13; ]; }; }|
@@ -106,14 +71,7 @@
 		  j = i / 2.0 + j
 		}
 		j = x = 0;
-		</i></pre><br> --- Program output ---<br><pre><i>=== Console ===
-		=== Erro: Instrução inválida: : ===
-		=== Instrução: 2 ===
-		=== Vars ===
-		|{ }|
-		=== Pilha ===
-		|let|
-		|Erro|
+		
 		</i></pre><br> --- Expected output (exact text)---<br><pre><i>=== Console ===
 		=== Vars ===
 		|{ b: [ 0: -1; 1: -0.5; 2: 0.5; 3: 2; 4: 4; 5: 6.5; ]; i: 6; j: 0; x: 0; }|
@@ -122,14 +80,7 @@
 		for( let i = 0; i &lt; 6; i = i + 2 ) {
 		  a[campo = campo + i] = i;
 		}
-		</i></pre><br> --- Program output ---<br><pre><i>=== Console ===
-		=== Erro: Instrução inválida: : ===
-		=== Instrução: 2 ===
-		=== Vars ===
-		|{ }|
-		=== Pilha ===
-		|let|
-		|Erro|
+		
 		</i></pre><br> --- Expected output (exact text)---<br><pre><i>=== Console ===
 		=== Vars ===
 		|{ a: { c0: 0; c02: 2; c024: 4; }; campo: c024; i: 6; }|
@@ -153,28 +104,14 @@
 			}
 		  }
 		}
-		</i></pre><br> --- Program output ---<br><pre><i>=== Console ===
-		=== Erro: Instrução inválida: : ===
-		=== Instrução: 2 ===
-		=== Vars ===
-		|{ }|
-		=== Pilha ===
-		|let|
-		|Erro|
+		
 		</i></pre><br> --- Expected output (exact text)---<br><pre><i>=== Console ===
 		=== Vars ===
 		|{ a: [ 0: [ 0: 1.1; 1: 0.55; 2: 0.366667; 3: 0.275; ]; 1: [ 0: 0.55; 1: 0.366667; 2: 0.275; 3: 0.22; ]; 2: [ 0: 0.366667; 1: 0.275; 2: 0.22; 3: 0.183333; ]; 3: [ 0: 0.275; 1: 0.22; 2: 0.183333; 3: 0.157143; ]; ]; b: [ 0: [ 0: 1.1; 1: 0.55; 2: 0.366667; 3: 0.275; ]; 1: [ 0: 0.55; 1: 0.366667; 2: 0.275; 3: 0.22; ]; 2: [ 0: 0.366667; 1: 0.275; 2: 0.22; 3: 0.183333; ]; 3: [ 0: 0.275; 1: 0.22; 2: 0.183333; 3: 0.157143; ]; ]; c: [ 0: [ 0: 1.72257; 1: 0.968; 2: 0.685667; 3: 0.533937; ]; 1: [ 0: 0.968; 1: 0.560969; 2: 0.403333; 3: 0.316905; ]; 2: [ 0: 0.685667; 1: 0.403333; 2: 0.292081; 3: 0.230476; ]; 3: [ 0: 0.533937; 1: 0.316905; 2: 0.230476; 3: 0.18233; ]; ]; i: 4; j: 4; k: 4; }|
 		=== Pilha ===
 		</i></pre><br></div><b class="ui-widget-header ui-corner-all">Test 9: #9 Variável não declarada </b><br><div>Incorrect program output<br> --- Input ---<br><pre><i>let a = 1, x = '9'
 		b = 10;
-		</i></pre><br> --- Program output ---<br><pre><i>=== Console ===
-		=== Erro: Instrução inválida: : ===
-		=== Instrução: 2 ===
-		=== Vars ===
-		|{ }|
-		=== Pilha ===
-		|let|
-		|Erro|
+		
 		</i></pre><br> --- Expected output (exact text)---<br><pre><i>Erro: a variável 'b' não foi declarada.
 		=== Console ===
 		=== Vars ===
@@ -182,14 +119,7 @@
 		=== Pilha ===
 		</i></pre><br></div><b class="ui-widget-header ui-corner-all">Test 10: #10 Declaração duplicada da mesma variável </b><br><div>Incorrect program output<br> --- Input ---<br><pre><i>let a = {}, b = [], c = 9
 		let a;
-		</i></pre><br> --- Program output ---<br><pre><i>=== Console ===
-		=== Erro: Instrução inválida: : ===
-		=== Instrução: 2 ===
-		=== Vars ===
-		|{ }|
-		=== Pilha ===
-		|let|
-		|Erro|
+		
 		</i></pre><br> --- Expected output (exact text)---<br><pre><i>Erro: a variável 'a' já foi declarada na linha 1.
 		=== Console ===
 		=== Vars ===
