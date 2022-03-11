@@ -3,291 +3,306 @@
 	<meta charset = "UTF-8">
 </head>
 <body>
-	
-	<div id="vpl_results_accordion" class="ui-accordion ui-widget ui-helper-reset" role="tablist"><h4 class="vpl_ide_accordion_t_grade ui-accordion-header ui-corner-top ui-accordion-header-collapsed ui-corner-all ui-state-default ui-accordion-icons" role="tab" id="ui-id-57" aria-controls="ui-id-29" aria-selected="false" aria-expanded="false" tabindex="-1"><span class="ui-accordion-header-icon ui-icon ui-icon-triangle-1-e"></span>Nota proposta: 0 / 100</h4><div class="vpl_ide_accordion_c_grade ui-accordion-content ui-corner-bottom ui-helper-reset ui-widget-content" style="display: none; height: 51.9671px; overflow: auto;" id="ui-id-29" aria-labelledby="ui-id-57" role="tabpanel" aria-hidden="true"></div><div class="vpl_ide_accordion_t_variables"></div><div class="vpl_ide_accordion_c_variables"></div><div class="vpl_ide_accordion_t_compilation"></div><div class="vpl_ide_accordion_c_compilation"></div><h4 class="vpl_ide_accordion_t_comments ui-accordion-header ui-corner-top ui-state-default ui-accordion-header-active ui-state-active ui-accordion-icons" role="tab" id="ui-id-58" aria-controls="ui-id-59" aria-selected="true" aria-expanded="true" tabindex="0"><span class="ui-accordion-header-icon ui-icon ui-icon-triangle-1-s"></span>Comentários</h4><div class="ui-widget vpl_ide_accordion_c_comments ui-accordion-content ui-corner-bottom ui-helper-reset ui-widget-content ui-accordion-content-active" style="overflow: auto;" id="ui-id-59" aria-labelledby="ui-id-58" role="tabpanel" aria-hidden="false"><b class="ui-widget-header ui-corner-all">Failed tests</b><br><div>Test 1: #1 Declaração de variáveis<br>Test 2: #2 Atribuição e contas<br>Test 3: #3 if sem else<br>Test 4: #4 if com else<br>Test 5: #5 Objetos e arrays<br>Test 6: #6 while<br>Test 7: #7 for<br>Test 8: #8 multiplicação de matrizes<br>Test 9: #9 Variável não declarada<br>Test 10: #10 Declaração duplicada da mesma variável<br></div><b class="ui-widget-header ui-corner-all">Test 1: #1 Declaração de variáveis </b><br><div>Incorrect program output<br> --- Input ---<br><pre><i>let a = {}, b = [], c = 9
-		let __9 = 1.1; let _ = "abc"
-		
-		
-		</i></pre><br> --- Expected output (exact text)---<br><pre><i>=== Console ===
-		=== Vars ===
-		|{ _: abc; __9: 1.1; a: { }; b: [ ]; c: 9; }|
-		=== Pilha ===
-		</i></pre><br></div><b class="ui-widget-header ui-corner-all">Test 2: #2 Atribuição e contas </b><br><div>Incorrect program output<br> --- Input ---<br><pre><i>let a = 1, b, x
-		x = b = a * (8 + 1.1)
-		let c = "hello ";
-		c += ", " + 'world' + '!';
-		
-		
-		</i></pre><br> --- Expected output (text)---<br><pre><i>=== Console ===
-		=== Vars ===
-		|{ a: 1; b: 9.1; c: hello , world!; x: 9.1; }|
-		=== Pilha ===
-		"
-		</i></pre><br></div><b class="ui-widget-header ui-corner-all">Test 3: #3 if sem else </b><br><div>Incorrect program output<br> --- Input ---<br><pre><i>let a = 4, b = 5, c, d;
-		if( a++ &gt; b )
-		  c = "a e' maior"
-			  + "!"
-		if( a &lt; b + 1 )
-		  d = "a e' menor";
-		
-		
-		</i></pre><br> --- Expected output (exact text)---<br><pre><i>=== Console ===
-		=== Vars ===
-		|{ a: 5; b: 5; c: undefined; d: a e' menor; }|
-		=== Pilha ===
-		</i></pre><br></div><b class="ui-widget-header ui-corner-all">Test 4: #4 if com else </b><br><div>Incorrect program output<br> --- Input ---<br><pre><i>let a = "ABA", c = 'CATE', resultado;
-		if( a == c )
-		  resultado = "Ta' errado!"
-		else if( a &lt; c )
-		{
-		  resultado = "a vem antes de c: "
-		  resultado += a + '&lt;' + c
-		}
-		else
-		  resultado = "Deu ruim!";
-		
-		</i></pre><br> --- Expected output (exact text)---<br><pre><i>=== Console ===
-		=== Vars ===
-		|{ a: ABA; c: CATE; resultado: a vem antes de c: ABA&lt;CATE; }|
-		=== Pilha ===
-		</i></pre><br></div><b class="ui-widget-header ui-corner-all">Test 5: #5 Objetos e arrays </b><br><div>Incorrect program output<br> --- Input ---<br><pre><i>let obj = {}, i = -2
-		obj.nome = "Manoel";
-		obj.nums = []
-		obj.nums[0]
-		= 12
-		obj.nums[3] = 12
-		obj.nums[3] += 1
-		obj.nums[i++ + 3] = 45;
-		obj['nom' + 'e'] = obj.nome + "!";
-		
-		</i></pre><br> --- Expected output (exact text)---<br><pre><i>=== Console ===
-		=== Vars ===
-		|{ i: -1; obj: { nome: Manoel!; nums: [ 0: 12; 1: 45; 2: undefined; 3: 13; ]; }; }|
-		=== Pilha ===
-		</i></pre><br></div><b class="ui-widget-header ui-corner-all">Test 6: #6 while </b><br><div>Incorrect program output<br> --- Input ---<br><pre><i>let i = 0, j = -1, x = 9, b = []
-		while( i &lt; x - 2*3 + 2.1 ) {
-		  b[i] = j;
-		  i = i + 1
-		  j = i / 2.0 + j
-		}
-		j = x = 0;
-		
-		</i></pre><br> --- Expected output (exact text)---<br><pre><i>=== Console ===
-		=== Vars ===
-		|{ b: [ 0: -1; 1: -0.5; 2: 0.5; 3: 2; 4: 4; 5: 6.5; ]; i: 6; j: 0; x: 0; }|
-		=== Pilha ===
-		</i></pre><br></div><b class="ui-widget-header ui-corner-all">Test 7: #7 for </b><br><div>Incorrect program output<br> --- Input ---<br><pre><i>let a = {}, campo = "c"
-		for( let i = 0; i &lt; 6; i = i + 2 ) {
-		  a[campo = campo + i] = i;
-		}
-		
-		</i></pre><br> --- Expected output (exact text)---<br><pre><i>=== Console ===
-		=== Vars ===
-		|{ a: { c0: 0; c02: 2; c024: 4; }; campo: c024; i: 6; }|
-		=== Pilha ===
-		</i></pre><br></div><b class="ui-widget-header ui-corner-all">Test 8: #8 multiplicação de matrizes </b><br><div>Incorrect program output<br> --- Input ---<br><pre><i>let a = [], b = [], c = [];
-		let i, j, k;
-		for( i = 0; i &lt; 4; i = i + 1 ) {
-		  a[i] = [];
-		  b[i] = [];
-		  for( j = 0; j &lt; 4; j += 1 ) {
-			a[i][j] = b[i][j] = 1.1/(i+j+1.0)
-		  }
-		}
-		
-		for( i = 0; i &lt; 4; i = i + 1 ) {
-		  c[i] = [];
-		  for( j = 0; j &lt; 4; j = j + 1 ) {
-			c[i][j] = 0
-			for( k = 0; k &lt; 4; k = k + 1 ) {
-			  c[i][j] = c[i][j] + a[i][k] * b[k][j];
-			}
-		  }
-		}
-		
-		</i></pre><br> --- Expected output (exact text)---<br><pre><i>=== Console ===
-		=== Vars ===
-		|{ a: [ 0: [ 0: 1.1; 1: 0.55; 2: 0.366667; 3: 0.275; ]; 1: [ 0: 0.55; 1: 0.366667; 2: 0.275; 3: 0.22; ]; 2: [ 0: 0.366667; 1: 0.275; 2: 0.22; 3: 0.183333; ]; 3: [ 0: 0.275; 1: 0.22; 2: 0.183333; 3: 0.157143; ]; ]; b: [ 0: [ 0: 1.1; 1: 0.55; 2: 0.366667; 3: 0.275; ]; 1: [ 0: 0.55; 1: 0.366667; 2: 0.275; 3: 0.22; ]; 2: [ 0: 0.366667; 1: 0.275; 2: 0.22; 3: 0.183333; ]; 3: [ 0: 0.275; 1: 0.22; 2: 0.183333; 3: 0.157143; ]; ]; c: [ 0: [ 0: 1.72257; 1: 0.968; 2: 0.685667; 3: 0.533937; ]; 1: [ 0: 0.968; 1: 0.560969; 2: 0.403333; 3: 0.316905; ]; 2: [ 0: 0.685667; 1: 0.403333; 2: 0.292081; 3: 0.230476; ]; 3: [ 0: 0.533937; 1: 0.316905; 2: 0.230476; 3: 0.18233; ]; ]; i: 4; j: 4; k: 4; }|
-		=== Pilha ===
-		</i></pre><br></div><b class="ui-widget-header ui-corner-all">Test 9: #9 Variável não declarada </b><br><div>Incorrect program output<br> --- Input ---<br><pre><i>let a = 1, x = '9'
-		b = 10;
-		
-		</i></pre><br> --- Expected output (exact text)---<br><pre><i>Erro: a variável 'b' não foi declarada.
-		=== Console ===
-		=== Vars ===
-		|{ }|
-		=== Pilha ===
-		</i></pre><br></div><b class="ui-widget-header ui-corner-all">Test 10: #10 Declaração duplicada da mesma variável </b><br><div>Incorrect program output<br> --- Input ---<br><pre><i>let a = {}, b = [], c = 9
-		let a;
-		
-		</i></pre><br> --- Expected output (exact text)---<br><pre><i>Erro: a variável 'a' já foi declarada na linha 1.
-		=== Console ===
-		=== Vars ===
-		|{ }|
-		=== Pilha ===
-		</i></pre><br></div><b class="ui-widget-header ui-corner-all">Summary of tests</b><br><div><pre><i>+------------------------------+
-		| 10 tests run/ 0 tests passed |
-		+------------------------------+
-		</i></pre><br><br></div></div><div class="vpl_ide_accordion_t_execution"></div><div class="vpl_ide_accordion_c_execution"></div><h4 class="vpl_ide_accordion_t_description ui-accordion-header ui-corner-top ui-state-default ui-accordion-header-collapsed ui-corner-all ui-accordion-icons" role="tab" id="ui-id-18" aria-controls="ui-id-19" aria-selected="false" aria-expanded="false" tabindex="-1"><span class="ui-accordion-header-icon ui-icon ui-icon-triangle-1-e"></span>Descrição</h4><div class="ui-widget vpl_ide_accordion_c_description ui-accordion-content ui-corner-bottom ui-helper-reset ui-widget-content" style="height: 52.9671px; overflow: auto; display: none;" id="ui-id-19" aria-labelledby="ui-id-18" role="tabpanel" aria-hidden="true"><div class="no-overflow"><h5><br></h5>
-		<h5>Compilador de mini Javascript</h5>
-		<p>Iremos construir um compilador de Javascript para uma forma intermediária de um máquina de pilha, em várias etapas. Em cada etapa algumas funcionalidades serão acrescentadas sobre o que já foi feito, logo uma das características desejáveis do programa
-			é ser manutenível (ser de fácil manutenção e ter boa legibilidade).&nbsp;</p>
-		<p>Inicialmente teremos variáveis sem tipo definido, mas com os qualificadores adequados: <i><strong>let</strong></i>, <i><strong>const</strong></i> e o <i><strong>var</strong></i>. O escopo pode ser global (fora de todos os blocos) ou local a um bloco.
-			A principal diferença nesse momento é que todos os comandos devem ser separados por ';' ou '\n'. Ficam de fora nessa primeira etapa também <strong>funções</strong> e expressões lambda (arrow functions e funções anônimas).<br></p>
-		<p>Construções a serem implementadas:</p>
-		<p></p>
-		<ol>
-			<li><strong>let</strong>, <strong>const</strong> e <strong>var</strong> (as variáveis em javascript podem receber valores de qualquer tipo): &nbsp;</li>
-			<ul>
-				<li><span style="font-size: calc(0.90375rem + 0.045vw);">uma variável do tipo </span><strong style="font-size: calc(0.90375rem + 0.045vw);">let</strong><span style="font-size: calc(0.90375rem + 0.045vw);"> só pode ser declarada uma única vez em cada escopo;</span></li>
-				<li><span style="font-size: calc(0.90375rem + 0.045vw);">uma variável declarada com <strong>var</strong> pode ser declarada diversas vezes, desde que não tenha sido declarada com <strong>let</strong> ainda;</span></li>
-				<li><span style="font-size: calc(0.90375rem + 0.045vw);">se uma variável for declarada com <strong>let</strong> ela não pode ser declarada de novo com <strong>var</strong>;</span></li>
-				<li><span style="font-size: calc(0.90375rem + 0.045vw);">se uma variável for declarada com <strong>var</strong> ela não pode ser declarada de novo com <strong>let</strong>;</span></li>
-				<li><span style="font-size: calc(0.90375rem + 0.045vw);"><strong>const</strong> segue as mesmas regras do <strong>let</strong>, acrescentando a restrição de que o valor da variável não pode ser alterado (mas seus campos podem)<strong>.</strong></span></li>
-			</ul>
-			<li>Comandos estruturados: <strong>if</strong>, <strong>while</strong>,<strong>&nbsp;for</strong>. Ficam de fora <strong>do-while</strong>, <strong>switch-case-break</strong>,&nbsp;<strong>return</strong>,&nbsp;<strong>continue</strong>,&nbsp;<strong>labels</strong>        e "forEach" (<strong>for</strong> específicos para arrays,<strong> for in</strong> etc).</li>
-		</ol>
-		<p>A nossa máquina de pilha será alterada para poder executar as seguintes instruções:</p>
-		<p></p>
-		<table cellspacing="0" border="2">
-			<colgroup "=" " width="58 "></colgroup>
-			<colgroup width="133 "></colgroup>
-			<colgroup width="85 "></colgroup>
-			<colgroup width="426 "></colgroup>
-			<tbody><tr>
-				<td colspan="4 " valign="middle " height="17 " align="center "><strong>Instruções</strong></td>
-				</tr>
-			<tr>
-				<td valign="middle " height="17 " align="center "><strong>Código</strong></td>
-				<td valign="middle " align="center "><strong>Nome</strong></td>
-				<td valign="middle " align="center "><strong>Parâmetros</strong></td>
-				<td valign="middle " align="left "><strong>Descrição</strong></td>
-			</tr>
-			<tr>
-				<td valign="middle " height="32 " align="center "># </td>
-				<td valign="middle " align="center "> goto </td>
-				<td sdval="1 " sdnum="1046; " valign="middle " align="center ">1</td>
-				<td valign="middle " align="left ">Desvia para o endereço no topo da pilha (ou chama uma função primitiva)</td>
-			</tr>
-			<tr>
-				<td valign="middle " height="17 " align="center ">{} </td>
-				<td valign="middle " align="center "> newObject </td>
-				<td sdval="0 " sdnum="1046; " valign="middle " align="center ">0</td>
-				<td valign="middle " align="left "> novo objeto</td>
-			</tr>
-			<tr>
-				<td valign="middle " height="17 " align="center ">[] </td>
-				<td valign="middle " align="center "> newArray </td>
-				<td sdval="0 " sdnum="1046; " valign="middle " align="center ">0</td>
-				<td valign="middle " align="left "> novo array</td>
-			</tr>
-			<tr>
-				<td valign="middle " height="17 " align="center ">@ </td>
-				<td valign="middle " align="center "> get </td>
-				<td sdval="1 " sdnum="1046; " valign="middle " align="center ">1</td>
-				<td valign="middle " align="left "> busca o valor da variável na pilha de RA’s, até encontrar ou dar erro</td>
-			</tr>
-			<tr>
-				<td valign="middle " height="17 " align="center ">=</td>
-				<td valign="middle " align="center "> set </td>
-				<td sdval="1 " sdnum="1046; " valign="middle " align="center ">2</td>
-				<td valign="middle " align="left ">Armazena o valor no topo da pilha em uma variável (se não existe local, busca global). Empilha esse valor de novo para permitir múltiplas atribuições: a = b = 8</td>
-			</tr>
-			<tr>
-				<td valign="middle " height="17 " align="center ">? </td>
-				<td valign="middle " align="center "> jumpTrue </td>
-				<td sdval="2 " sdnum="1046; " valign="middle " align="center ">2</td>
-				<td valign="middle " align="left "> Testa e desvia para o endereço no topo da pilha</td>
-			</tr>
-			<tr>
-				<td valign="middle " height="17 " align="center ">&amp; </td>
-				<td valign="middle " align="center "> let </td>
-				<td sdval="1 " sdnum="1046; " valign="middle " align="center ">1</td>
-				<td valign="middle " align="left "> declara uma variável (no escopo atual)</td>
-			</tr>
-			<tr>
-				<td valign="middle " height="17 " align="center ">[@] </td>
-				<td valign="middle " align="center "> getProp </td>
-				<td sdval="2 " sdnum="1046; " valign="middle " align="center ">2</td>
-				<td valign="middle " align="left "> Lê a propriedade no topo da pilha de um objeto ou array</td>
-			</tr>
-			<tr>
-				<td valign="middle " height="32 " align="center ">[=] </td>
-				<td valign="middle " align="center "> setProp </td>
-				<td valign="middle " align="center ">3 (o,p,v)</td>
-				<td valign="middle " align="left ">atribui um valor à uma propriedade de um objeto: o[p] = v <br>(array ou objeto).&nbsp;Empilha esse valor de novo para permitir múltiplas atribuições: a.c = b.c = 8</td>
-			</tr>
-			<tr>
-				<td valign="middle " height="32 " align="center ">$ </td>
-				<td valign="middle " align="center "> callFunc </td>
-				<td valign="middle " align="center ">2 (n,f)</td>
-				<td valign="middle " align="left ">empilha um novo RA e desvia para f. N é o número de parâmetros (os parâmetros da função devem estar empilhados). </td>
-			</tr>
-			<tr>
-				<td valign="middle " height="17 " align="center ">~ </td>
-				<td valign="middle " align="center "> retFunc </td>
-				<td sdval="1 " sdnum="1046; " valign="middle " align="center ">1</td>
-				<td valign="middle " align="left "> desempilha o RA e desvia para o endereço no topo da pilha</td>
-			</tr>
-			<tr>
-				<td valign="middle " height="17 " align="center ">^ </td>
-				<td valign="middle " align="center "> pop </td>
-				<td sdval="0 " sdnum="1046; " valign="middle " align="center ">0</td>
-				<td valign="middle " align="left "> desempilha um parâmetro na pilha de operandos</td>
-			</tr>
-			<tr>
-				<td valign="middle " height="17 " align="center ">.</td>
-				<td align="center ">halt</td>
-				<td sdval="0 " sdnum="1046; " valign="middle " align="center ">0</td>
-				<td valign="middle " align="left
-				"> termina a execução</td>
-			</tr>
-		</tbody></table><br><p></p>Cada instrução ocupa um endereço, independente do tamanho de sua string. Ou seja, considere que teremos um array de código onde cada <i><strong>token</strong></i> é uma posição. O array de instruções começa em zero. É permitido armazenar endereços em variáveis, pois pode considerá-los como números inteiros.<p>É importante notar que a instrução "<strong>retFunc</strong>" apenas irá desempilhar o Registro de Ativação e desviará para o endereço no topo da pilha, logo é necessário passar para a função o endereço de retorno, que deve ser empilhado. Isso será detalhado na próxima aula, no tópico Registro
-				de Ativação.
-				<br></p>
-				<h5>Exemplos:</h5>
-				<p><strong>Entrada:</strong></p>
-				<pre style="text-align: left; background-color:#DDD; border-radius: 5px; padding: 10px; border: 1px solid rgba(0,0,0,.45)">let a = {};<br>let b = [];<br>let c, d;<br>c = 1;<br>d = 'Hello';<br>a.campo = c + 1;<br>b[9] = a.campo;<br></pre>
-				<p><strong>Saída:</strong></p>
-				<pre style="text-align: left; background-color:#DDD; border-radius: 5px; padding: 10px; border: 1px solid rgba(0,0,0,.45)">a&amp; a {} = ^<br>b&amp; b [] = ^<br>c&amp; d&amp;<br>c 1 = ^<br>d 'Hello' = ^<br>a@ campo c@ 1 + [=] ^<br>b@ 9 a@ campo[@] [=] ^<br>.<br></pre>
-				<p>Espaços, tabulação e quebra de linha serão ignorados sempre que for possível diferenciar uma instrução da seguinte.</p>
-				<p></p>
-				<p>Sugestão inicial de gramática: será necessário um símbolo não terminal para tratar <span><strong style="font-style: italic;">lvalues</strong><span> e </span><i><strong>rvalues</strong>. </i>Note que todo <strong><i>lvalue</i></strong>            pode ser um <strong><i>rvalue</i></strong>, mas apenas algumas construções podem ser <strong><i>lvalues</i></strong>. são elas:</span>
-				</p>
-				<pre style="text-align: left; background-color:#DDD; border-radius: 5px; padding: 10px; border: 1px solid rgba(0,0,0,.45)"><span>LVALUE <span>-&gt;</span> id<br></span><span>LVALUEPROP&nbsp;-&gt; E [ E ]<br></span><span>LVALUEPROP&nbsp;-&gt; E . id</span></pre>
-				<p><span></span></p>
-				<p><span>Apenas devemos diferencias <i><strong>setProp</strong></i> "[=]" de atribuição "=".&nbsp;</span></p>
-				<p><span>As atribuições devem ser tratadas na produção do operador '<strong>=</strong>' (que é associativo à direita).&nbsp;Já as operações de leitura "<strong>@</strong>" e "<strong>[@]</strong>" devem ser tratadas na conversão de E em <strong><span><i>lvalue</i></span></strong>.</span>
-				</p>
-				<pre style="text-align: left; background-color:#DDD; border-radius: 5px; padding: 10px; border: 1px solid rgba(0,0,0,.45)"><span><br></span>E -&gt; LVALUE <strong>=</strong> E <span style="white-space:pre">	</span>&nbsp; &nbsp;&nbsp;<br>&nbsp; | LVALUEPROP <strong>=</strong> E <span style="white-space:pre">	<br></span>&nbsp; | ...<br>  | LVALUE<br>  | LVALUEPROP</pre>
-				<p>Dessa forma, um <span><i><strong>lvalue </strong></i></span>pode ser convertido em um <i><strong>rvalue </strong></i>(símbolo E).</p>
-				<h5>Tratamento de erros</h5>
-				<p>Não serão testados erros de sintaxe. Porém, compilador deve tratar três tipos de erros:&nbsp;</p>
-				<p></p>
-				<ul>
-					<li>Quando uma variável for declarada em duplicidade deve encerrar a compilação com a mensagem:&nbsp;</li>
-				</ul>
-				<div class="editor-indent" style="margin-left: 30px;">
-					<pre style="text-align: left; background-color:#DDD; border-radius: 5px; padding: 10px; border: 1px solid rgba(0,0,0,.45)"><i>Erro: a variável 'xxx' já foi declarada na linha nn.</i></pre>
-				</div>
-				<ul>
-					<li>Quando uma variável for utilizada sem ter sido declarada deve encerrar a compilação com a mensagem:&nbsp;</li>
-				</ul>
-				<div class="editor-indent" style="margin-left: 30px;">
-					<pre style="text-align: left; background-color:#DDD; border-radius: 5px; padding: 10px; border: 1px solid rgba(0,0,0,.45)"><i>Erro: a variável 'xxx' não foi declarada.</i></pre>
-				</div>
-				<ul>
-					<li>Quando uma variável <strong>const</strong> for modificada deve encerrar a compilação com a mensagem:</li>
-				</ul>
-				<div class="editor-indent" style="margin-left: 30px;">
-					<pre style="text-align: left; background-color:#DDD; border-radius: 5px; padding: 10px; border: 1px solid rgba(0,0,0,.45)"><i>Erro: tentativa de modificar uma variável constante ('xxx').</i></pre></div>
-				<p></p>
-				<p></p>
-				<h5><span>Interpretador</span></h5>
-				<p><span>Clique <a href="https://moodle.cos.ufrj.br/pluginfile.php/19812/mod_vpl/intro/mdp.zip">aqui</a> para baixar o interpretador da máquina de pilha.</span></p>
-				<p></p>
-				<p></p>
-				<p></p>
-				<p></p></div></div></div>
-				
+<div id="vpl_results_accordion" class="ui-accordion ui-widget ui-helper-reset" role="tablist"><h4 class="vpl_ide_accordion_t_grade ui-accordion-header ui-corner-top ui-accordion-header-collapsed ui-corner-all ui-state-default ui-accordion-icons" role="tab" id="ui-id-26" aria-controls="ui-id-27" aria-selected="false" aria-expanded="false" tabindex="-1"><span class="ui-accordion-header-icon ui-icon ui-icon-triangle-1-e"></span>Nota proposta: 0 / 100</h4><div class="vpl_ide_accordion_c_grade ui-accordion-content ui-corner-bottom ui-helper-reset ui-widget-content" style="display: none; height: 49.6001px; overflow: auto;" id="ui-id-27" aria-labelledby="ui-id-26" role="tabpanel" aria-hidden="true"></div><div class="vpl_ide_accordion_t_variables"></div><div class="vpl_ide_accordion_c_variables"></div><div class="vpl_ide_accordion_t_compilation"></div><div class="vpl_ide_accordion_c_compilation"></div><h4 class="vpl_ide_accordion_t_comments ui-accordion-header ui-corner-top ui-state-default ui-accordion-header-active ui-state-active ui-accordion-icons" role="tab" id="ui-id-28" aria-controls="ui-id-29" aria-selected="true" aria-expanded="true" tabindex="0"><span class="ui-accordion-header-icon ui-icon ui-icon-triangle-1-s"></span>Comentários</h4><div class="ui-widget vpl_ide_accordion_c_comments ui-accordion-content ui-corner-bottom ui-helper-reset ui-widget-content ui-accordion-content-active" id="ui-id-29" aria-labelledby="ui-id-28" role="tabpanel" aria-hidden="false"><b class="ui-widget-header ui-corner-all">Failed tests</b><br><div>Test 1: #1 asm<br>Test 2: #2 Blocos e variáveis<br>Test 3: #3 Variável duplicada<br>Test 4: #4 Escopo<br>Test 5: #5 Escopo<br>Test 6: #6 Função sem parâmetros<br>Test 7: #7 Função com parâmetros<br>Test 8: #8 Função com parâmetros e var duplicada<br>Test 9: #9 mdc<br>Test 10: #10 função sem valor de retorno<br>Test 11: #11 métodos<br>Test 12: #12 argumentos<br>Test 13: #13 Função com variáveis locais<br>Test 14: #14 Função que se anula<br>Test 15: #15 Super teste<br></div><b class="ui-widget-header ui-corner-all">Test 1: #1 asm </b><br><div>Incorrect program output<br> --- Input ---<br><pre><i>function log( msg ) {
+  msg asm{println # undefined}
+}
+
+let r = log( 'Hello, world!' );
+</i></pre><br> --- Expected output (exact text)---<br><pre><i>=== Console ===
+Hello, world!
+=== Vars ===
+|{ log: { &amp;funcao: ##; }; r: undefined; undefined: undefined; }|
+=== Pilha ===
+</i></pre><br></div><b class="ui-widget-header ui-corner-all">Test 2: #2 Blocos e variáveis </b><br><div>Incorrect program output<br> --- Input ---<br><pre><i>const a = 9
+function log( msg ) {
+  msg asm{println # undefined}
+}
+
+var c = [
+]
+log( c )
+{ let a = 3.1 }
+{ const a = 8
+  let b = 7
+  c = b }
+var c = c+ c++;
+</i></pre><br> --- Expected output (exact text)---<br><pre><i>=== Console ===
+[ ]
+=== Vars ===
+|{ a: 9; c: 14; log: { &amp;funcao: ##; }; undefined: undefined; }|
+=== Pilha ===
+</i></pre><br></div><b class="ui-widget-header ui-corner-all">Test 3: #3 Variável duplicada </b><br><div>Incorrect program output<br> --- Input ---<br><pre><i>let b, c;
+{ const a = 0
+  var c
+}
+let a = 8
+if( a ) {[]}
+else {
+  let b, d = { };
+}
+let d;
+let a
+</i></pre><br> --- Expected output (exact text)---<br><pre><i>Erro: a variável 'a' já foi declarada na linha 5.
+=== Console ===
+=== Vars ===
+|{ undefined: undefined; }|
+=== Pilha ===
+</i></pre><br></div><b class="ui-widget-header ui-corner-all">Test 4: #4 Escopo </b><br><div>Incorrect program output<br> --- Input ---<br><pre><i>function print(x) { x asm{println # undefined}
+}
+var a, b = [];
+const c = -1;
+print( c + c )
+b[0] = true;
+if( b[0] ) {
+  let b = { }
+  b.m = 9;
+  print( b );
+  a = b.m
+}
+</i></pre><br> --- Expected output (exact text)---<br><pre><i>=== Console ===
+-2
+{ m: 9; }
+=== Vars ===
+|{ a: 9; b: [ 0: true; ]; c: -1; print: { &amp;funcao: ##; }; undefined: undefined; }|
+=== Pilha ===
+</i></pre><br></div><b class="ui-widget-header ui-corner-all">Test 5: #5 Escopo </b><br><div>Incorrect program output<br> --- Input ---<br><pre><i>var a, b = [];
+const c = -1;
+b[0] = true;
+function print(x) { x asm{println # undefined};
+  0 asm{undefined .};
+  return 0
+}
+if( b[0] ) { let a = -1; {
+    let b = { }
+    b.m = 9;
+    print( b );
+  }
+  a = b
+}
+</i></pre><br> --- Expected output (exact text)---<br><pre><i>=== Console ===
+{ m: 9; }
+=== Vars ===
+|{ a: undefined; b: [ 0: true; ]; c: -1; print: { &amp;funcao: ##; }; undefined: undefined; }|
+|{ a: -1; }|
+|{ b: { m: 9; }; }|
+|{ &amp;retorno: ##; arguments: [ 0: { m: 9; }; ]; x: { m: 9; }; }|
+=== Pilha ===
+|0|
+|undefined|
+</i></pre><br></div><b class="ui-widget-header ui-corner-all">Test 6: #6 Função sem parâmetros </b><br><div>Incorrect program output<br> --- Input ---<br><pre><i>let str = "hello";
+function valor() { return str + ", world"; }
+var a = valor()
+str = "HELLO";;;
+var b = valor
+(
+)
+</i></pre><br> --- Expected output (exact text)---<br><pre><i>=== Console ===
+=== Vars ===
+|{ a: hello, world; b: HELLO, world; str: HELLO; undefined: undefined; valor: { &amp;funcao: ##; }; }|
+=== Pilha ===
+</i></pre><br></div><b class="ui-widget-header ui-corner-all">Test 7: #7 Função com parâmetros </b><br><div>Incorrect program output<br> --- Input ---<br><pre><i>function sqr(x) { return x*x + y }
+let y = 0.01, a = sqr( 5.2, 7 );
+</i></pre><br> --- Expected output (exact text)---<br><pre><i>=== Console ===
+=== Vars ===
+|{ a: 27.05; sqr: { &amp;funcao: ##; }; undefined: undefined; y: 0.01; }|
+=== Pilha ===
+</i></pre><br></div><b class="ui-widget-header ui-corner-all">Test 8: #8 Função com parâmetros e var duplicada </b><br><div>Incorrect program output<br> --- Input ---<br><pre><i>function f( x, y, z ) {
+  let z;
+  return x*x + y
+}
+let f( 5.2, 7 );
+</i></pre><br> --- Expected output (exact text)---<br><pre><i>Erro: a variável 'z' já foi declarada na linha 1.
+=== Console ===
+=== Vars ===
+|{ undefined: undefined; }|
+=== Pilha ===
+</i></pre><br></div><b class="ui-widget-header ui-corner-all">Test 9: #9 mdc </b><br><div>Incorrect program output<br> --- Input ---<br><pre><i>function mdc( a, b ) {
+  if( b == 0 )
+    return a;
+  else
+    return mdc( b, a % b )
+}
+
+let a = mdc( 24, 33  );
+</i></pre><br> --- Expected output (exact text)---<br><pre><i>=== Console ===
+=== Vars ===
+|{ a: 3; mdc: { &amp;funcao: ##; }; undefined: undefined; }|
+=== Pilha ===
+</i></pre><br></div><b class="ui-widget-header ui-corner-all">Test 10: #10 função sem valor de retorno </b><br><div>Incorrect program output<br> --- Input ---<br><pre><i>function teste( a, b ) {
+  if( a &gt; b )
+    return a;
+}
+
+let um = teste( 3, 4 ),
+    dois = teste( 4, 3 );
+</i></pre><br> --- Expected output (exact text)---<br><pre><i>=== Console ===
+=== Vars ===
+|{ dois: 4; teste: { &amp;funcao: ##; }; um: undefined; undefined: undefined; }|
+=== Pilha ===
+</i></pre><br></div><b class="ui-widget-header ui-corner-all">Test 11: #11 métodos </b><br><div>Incorrect program output<br> --- Input ---<br><pre><i>let console = { }
+let Number =  {
+}
+
+function log( msg ) {
+  msg asm{println # undefined};
+}
+
+function number_to_string( msg ) {
+  msg asm{to_string # '&amp;retorno' @ ~};
+}
+
+console.log = log;
+Number.toString = number_to_string
+
+let a = "Saida: ";
+let b = 3.14;
+
+console.log( a + Number.toString( b ) )
+</i></pre><br> --- Expected output (text)---<br><pre><i>=== Console ===
+Saida: 3.14
+=== Vars ===
+|{ Number: { toString: { &amp;funcao: ##; }; }; a: Saida: ; b: 3.14; console: { log: { &amp;funcao: ##; }; }; log: { &amp;funcao: ##; }; number_to_string: { &amp;funcao: ##; }; undefined: undefined; }|
+=== Pilha ===
+"
+</i></pre><br></div><b class="ui-widget-header ui-corner-all">Test 12: #12 argumentos </b><br><div>Incorrect program output<br> --- Input ---<br><pre><i>let console = {};
+
+function exit( n ) {
+  'Codigo de erro: ' asm{print # undefined};
+  n asm{println # undefined};
+  0 asm{.};
+}
+
+function teste( a, b, c ) {
+  exit( b );
+}
+
+let a = "Saida: ";
+let b = 3.14;
+
+console.teste = {};
+console.teste.log = [
+]
+console.teste.log[1] = teste;
+
+console.teste.log[1]( a, b, "5" );
+</i></pre><br> --- Expected output (exact text)---<br><pre><i>=== Console ===
+Codigo de erro: 3.14
+=== Vars ===
+|{ a: Saida: ; b: 3.14; console: { teste: { log: [ 0: undefined; 1: { &amp;funcao: ##; }; ]; }; }; exit: { &amp;funcao: ##; }; teste: { &amp;funcao: ##; }; undefined: undefined; }|
+|{ &amp;retorno: ##; a: Saida: ; arguments: [ 0: Saida: ; 1: 3.14; 2: 5; ]; b: 3.14; c: 5; }|
+|{ &amp;retorno: ##; arguments: [ 0: 3.14; ]; n: 3.14; }|
+=== Pilha ===
+|0|
+</i></pre><br></div><b class="ui-widget-header ui-corner-all">Test 13: #13 Função com variáveis locais </b><br><div>Incorrect program output<br> --- Input ---<br><pre><i>function f( x ) {
+  let b = 5 * x
+  let c = { }
+
+  c.num = b;
+  c.arr = [];
+  c.arr[1] = 0;
+  return c ;
+}
+
+let res = f( 11 );
+</i></pre><br> --- Expected output (exact text)---<br><pre><i>=== Console ===
+=== Vars ===
+|{ f: { &amp;funcao: ##; }; res: { arr: [ 0: undefined; 1: 0; ]; num: 55; }; undefined: undefined; }|
+=== Pilha ===
+</i></pre><br></div><b class="ui-widget-header ui-corner-all">Test 14: #14 Função que se anula </b><br><div>Incorrect program output<br> --- Input ---<br><pre><i>function f( x ) {
+  let b = f;
+  const h = [ ]
+  f = x;
+  return b
+}
+
+let a;
+let g = f( a = [ ], {
+} );
+</i></pre><br> --- Expected output (exact text)---<br><pre><i>=== Console ===
+=== Vars ===
+|{ a: [ ]; f: [ ]; g: { &amp;funcao: ##; }; undefined: undefined; }|
+=== Pilha ===
+</i></pre><br></div><b class="ui-widget-header ui-corner-all">Test 15: #15 Super teste </b><br><div>Incorrect program output<br> --- Input ---<br><pre><i>function getNome( obj ) { return obj.nome; }
+
+function getClass( obj ) { return obj.class; }
+
+function criaAluno( nome, celular, email ) {
+  let aluno = {};
+
+  aluno.nome = nome;
+  aluno.celular = celular;
+  aluno.email = email;
+  aluno.super = prototipoAluno;
+  aluno.getNome = getNome;
+
+  return aluno;
+}
+
+function log( msg ) {
+  msg asm{println # undefined};
+}
+
+function invoke( obj, metodo ) {
+  if( toString( obj[metodo] ) == 'undefined' )
+    return obj.super[metodo]( obj.super );
+  else
+    return obj[metodo]( obj );
+}
+
+function toString( msg ) {
+  msg asm{to_string # '&amp;retorno' @ ~};
+}
+
+let prototipoAluno = { };
+
+prototipoAluno.class = 'Classe Aluno';
+prototipoAluno.getClass = getClass;
+
+let joao = criaAluno( 'Joao', '123456', 'eu@aqui.com' );
+let maria = criaAluno( 'Maria', '123457', 'voce@la.com' );
+
+log( invoke( joao, 'getNome' ) );
+log( invoke( joao, 'getClass' ) );
+log( invoke( maria, 'getNome' ) );
+log( invoke( maria, 'getClass' ) );
+</i></pre><br> --- Expected output (exact text)---<br><pre><i>=== Console ===
+Joao
+Classe Aluno
+Maria
+Classe Aluno
+=== Vars ===
+|{ criaAluno: { &amp;funcao: ##; }; getClass: { &amp;funcao: ##; }; getNome: { &amp;funcao: ##; }; invoke: { &amp;funcao: ##; }; joao: { celular: 123456; email: eu@aqui.com; getNome: { &amp;funcao: ##; }; nome: Joao; super: { class: Classe Aluno; getClass: { &amp;funcao: ##; }; }; }; log: { &amp;funcao: ##; }; maria: { celular: 123457; email: voce@la.com; getNome: { &amp;funcao: ##; }; nome: Maria; super: { class: Classe Aluno; getClass: { &amp;funcao: ##; }; }; }; prototipoAluno: { class: Classe Aluno; getClass: { &amp;funcao: ##; }; }; toString: { &amp;funcao: ##; }; undefined: undefined; }|
+=== Pilha ===
+</i></pre><br></div><b class="ui-widget-header ui-corner-all">Summary of tests</b><br><div><pre><i>+------------------------------+
+| 15 tests run/ 0 tests passed |
++------------------------------+
+</i></pre><br><br></div></div><div class="vpl_ide_accordion_t_execution"></div><div class="vpl_ide_accordion_c_execution"></div><h4 class="vpl_ide_accordion_t_description ui-accordion-header ui-corner-top ui-state-default ui-accordion-header-collapsed ui-corner-all ui-accordion-icons" role="tab" id="ui-id-18" aria-controls="ui-id-19" aria-selected="false" aria-expanded="false" tabindex="-1"><span class="ui-accordion-header-icon ui-icon ui-icon-triangle-1-e"></span>Descrição</h4><div class="ui-widget vpl_ide_accordion_c_description ui-accordion-content ui-corner-bottom ui-helper-reset ui-widget-content" style="height: 50.6001px; overflow: auto; display: none;" id="ui-id-19" aria-labelledby="ui-id-18" role="tabpanel" aria-hidden="true"><div class="no-overflow"><h5><a class="autolink" title="Compilador de mini Javascript" href="https://moodle.cos.ufrj.br/mod/vpl/view.php?id=7335">Compilador de mini javascript</a> - funções<br></h5><p><a href="https://www.loom.com/share/a1e180afadc3431c81f3da433abcc760">Videoaula 58 - aula 20/09/2021</a> - instruções para a tarefa<br></p><p>Agora iremos incluir na nossa linguagem as funções. Funções podem ou não ter parâmetros, e devem ser declaradas antes de poderem ser utilizadas. Todas as funções devem retornar algum valor - se uma função atingir a última instrução sem um comando <span><strong>return</strong></span>&nbsp;ela deve retornar o valor&nbsp;<strong><i>undefined</i></strong>. Esse é um valor já predefinido na <a class="autolink" title="Máquina de Pilha" href="https://moodle.cos.ufrj.br/mod/page/view.php?id=7935">máquina de pilha</a> como uma variável global chamada <strong>undefined</strong>. Para acessar esse valor basta emitir duas instruções: "<strong>undefined @</strong>".</p><h5>O objeto função</h5><p>Uma função na mdp deve ser representado como um <strong>objeto</strong> contendo uma propriedade de nome <strong>'&amp;funcao</strong>' contendo o endereço da mesma. Por exemplo, se a função <i><strong>mdc</strong></i> está no endereço 21, ela deve ser representada por um objeto da seguinte forma:</p><pre>mdc: { '&amp;funcao': 21; }</pre><p>Esse objeto é como uma variável global (ou mesmo local). Para tanto, devemos gerar o seguinte trecho de código <strong>na posição onde a função foi declarada </strong>(note que o código da função em si deve estar em outra parte do programa, de preferência ao final).</p><pre>mdc &amp; mdc {} = '&amp;funcao' 21 [=] ^</pre><p>O endereço da função deve ser resolvido a posterior, ou seja, inicialmente iremos colocar a instrução como um <i><strong>label</strong></i>&nbsp;("<strong>mdc_453:</strong>", por exemplo) e só na hora de resolver endereços é que saberemos o valor verdadeiro.&nbsp;</p><p>Uma função pode ser atribuída a uma variável (ou propriedade de um objeto) sem nenhum esforço adicional. pois na verdade é como se fosse uma atribuição de objetos. Assim, o código:&nbsp;</p><pre>ptr_fun = mdc;</pre><p>Pode ser traduzido para:</p><pre>ptr_fun mdc @ = ^</pre><h5>Chamada de função</h5><p>Para chamar uma função devemos usar a instrução<strong> '$' </strong>(callFunc). Essa instrução recebe dois operandos na pilha: no topo deve estar o objeto função (por exemplo,&nbsp;<strong>{ '&amp;funcao': 21; }</strong> ), lembrando que um objeto função é um objeto que possui a propriedade&nbsp;&nbsp;<strong>'&amp;funcao'</strong> com o endereço do código da função. O operando abaixo do topo é o número de parâmetros que foram passados para a função na chamada - esse número não necessariamente é igual ao número de parâmetros que a função espera, pode ser maior ou menor e devem estar empilhados da esquerda para a direita (ou seja, o parâmetro mais à esquerda está mais embaixo na pilha) logo abaixo dos dois operandos da instrução<strong> '$'</strong>. Assim, a expressão <strong>"res = mdc( 36, 60 )"</strong> pode ser compilada para o seguinte código:&nbsp;</p><pre>res 36 60 2 mdc @ $ = ^</pre><p>Note as instruções que empilham o objeto função: "mdc @". Isso pode ser feito também através de uma propriedade de um objeto ou qualquer outra expressão.</p><h5>O código da função</h5><p>O código a ser gerado para a função em si deve ser armazenado em uma variável global (vetor de strings também) contendo todas as instruções geradas para todas as funções do programa, e ser concatenado com o restante do código do programa imediatamente após a última instrução do mesmo, ou seja, o&nbsp;<strong>"."</strong> (halt). Após isso, devemos enviar o código concatenado para a função que resolve endereços. Uma possibilidade seria (assumindo que o operador "+" foi redefinido para concatenar strings e vetores de strings):</p><pre>FIM : S  	{ $ $.c = $1.c + "." + funcoes; emite_codigo( resolve_enderecos( $ $.c ) ); }
+    ;
+</pre><p>Apenas revisando, os operadores "=" e "@" atuam sobre o <a class="autolink" title="Registro de Ativação" href="https://moodle.cos.ufrj.br/mod/page/view.php?id=7348">registro de ativação</a> ou sobre as variáveis globais. Cada chamada de função empilha um <a class="autolink" title="Registro de Ativação" href="https://moodle.cos.ufrj.br/mod/page/view.php?id=7348">registro de ativação</a> na pilha de registros de ativação.&nbsp; Uma função na linguagem irá sempre receber no seu <a class="autolink" title="Registro de Ativação" href="https://moodle.cos.ufrj.br/mod/page/view.php?id=7348">registro de ativação</a> (que está no topo da pilha de RA's) algumas <strong>variáveis</strong> <strong>especiais</strong>. O <a class="autolink" title="Registro de Ativação" href="https://moodle.cos.ufrj.br/mod/page/view.php?id=7348">registro de ativação</a> é apenas um objeto. No momento, duas propriedade desse objeto nos interessam: o<strong> endereço de retorno</strong> da função, que está na propriedade <strong>'&amp;retorno'</strong>, e a variável <i><strong>array&nbsp;</strong></i><strong>arguments</strong>, que contém os <strong>parâmetros</strong> passados na chamada da função, da esquerda para a direita (ou seja, o primeiro parâmetro está em arguments[0]). A instrução <strong>'$'</strong>&nbsp;(callFunc) irá criar e empilhar um novo&nbsp;<strong>RA na pilha de RA's </strong>(que é outra pilha, diferente da pilha de operandos), com a variável arguments e <strong>'&amp;retorno'</strong>, e irá desempilhar todos os parâmetros passados na chamada da função e colocá-los dentro de arguments antes de desviar para o endereço da função. As variáveis locais serão criadas no RA da função, e os parâmetros dessa função devem ser transformados em variáveis locais e receber o seu valor a partir de <strong>arguments</strong>. É sua responsabilidade gerar o código para copiar os valores do array de argumentos para as parâmetros. Note que se uma função for chamada com um número diferente do esperado de argumentos nada de mais irá acontecer: argumentos a mais serão ignorados, e argumentos a menos resultarão em parâmetros com o valor <span><i><strong>undefined</strong>.&nbsp;</i></span></p><p>Por exemplo, a função abaixo:</p><pre>function mdc( a, b ) {
+  if( b == 0 )
+    return a;
+  else
+    return mdc( b, a % b );
+}<br></pre><p>Pode ser compilada para:</p><pre>a &amp; a arguments @ 0 [@] = ^   // cria o parâmetro 'a' como uma variável local e busca o seu valor em arguments[0].
+b &amp; b arguments @ 1 [@] = ^   // cria o parâmetro 'b' como uma variável local e busca o seu valor em arguments[1].
+b @ 0 == 68 ?                 // Teste do if - 68 é o endereço do then, abaixo está o código do else
+b @ a @ b @ % 2 mdc @ $       // else: chama mdc( b, a % b). Deixa o resultado no topo da pilha para ser retornado pela função.
+'&amp;retorno' @ ~                // empilha o endereço de retorno (que está em '&amp;retorno') e volta da função. 
+73 #                          // Vai para o fim_if. Note que como teve um return antes, esse código é desnecessário. O otimizador que se vire...
+a @ '&amp;retorno' @ ~            // Esse é o código do then: return a;
+undefined @ '&amp;retorno' @ ~    // Toda função deve terminar com esse código para o caso de não ter um valor de retorno.
+</pre><p>Acima, há dois trechos de código que nunca serão executados pois estão depois de um <strong>return</strong>. Chamamos isso de <i><strong>unreachable code</strong></i>, e o otimizador é o responsável por eliminá-los do código gerado. Temos o "73 #", que é o goto pro fim do if, e a última linha do código: para não ter de verificar se a função está ou não retornando um valor, como toda função deve retornar sempre um valor mesmo que seja <strong>undefined</strong>, colocamos esse código que retorna <span><i style=""><strong>undefined</strong></i></span>. Por último, note que sem termos feito nenhum tratamento especial a função usa&nbsp; recursividade...</p><h3><span style="color: inherit; font-family: inherit; font-size: 16px; font-weight: 700;">Novas instruções na linguagem</span></h3><h5><span style="color: inherit; font-family: inherit; font-size: 16px; font-weight: 700;">1) Instruções para empilhar e desempilhar ambientes locais: </span><span style="color: inherit; font-family: inherit; font-size: 16px;">"</span><span style="color: inherit; font-family: inherit; font-size: 16px; font-weight: 700;">&lt;{</span><span style="color: inherit; font-family: inherit; font-size: 16px;"><span><span><span><span><span><span><span><strong>" <strong>e</strong> "<strong>}&gt;</strong>"</strong></span></span></span></span></span></span></span></span></h5><p>Essas instruções irão criar ou destruir um novo ambiente para variáveis locais na pilha de variáveis, e devem ser utilizadas apenas para tratar blocos: a instrução para chamada de função "<strong>$</strong>" já empilha um novo ambiente para variáveis locais na pilha de variáveis.</p><h5><span style="color: inherit; font-family: inherit; font-size: 16px; font-weight: 700;">2) E asm{instruções mdp}</span><br></h5><p>Você deve alterar a gramática da linguagem para acomodar mais uma instrução: asm{}. Essa instrução irá simplesmente conter instruções da <a class="autolink" title="Máquina de Pilha" href="https://moodle.cos.ufrj.br/mod/page/view.php?id=7935">máquina de pilha</a>, que devem ser copiadas diretamente para o código. Você pode assumir que cada instrução entre as chaves estará separada da instrução seguinte por um espaço em branco, e que estarão todas na mesma linha. No lex, podemos tratar da seguinte forma:<br></p><pre>"asm{".*"}"  {  lexema = trim( yytext + 3, "{}" ); 
+                yylval.v = <strong>tokeniza</strong>( lexema );
+                coluna += strlen( yytext ); 
+                return ASM; }<br></pre><p>A função 'trim' elimina de uma string os caracteres passados (no caso, '{' e '}'). A função tokeniza divide a string em um vetor de strings, usando como separador o espaço em branco. Ambas foram feitas por mim; você deve implementar da sua forma.&nbsp;</p><p>No yacc, uma nova produção pode ser:&nbsp;</p><pre>CMD : E ASM ';' 	{ $ $.v = $1.v + $2.v; }<br>&nbsp; &nbsp; | ... outras produções...</pre><p>Isso significa que as instruções dentro do comando <strong>asm</strong> irão sempre ter um parâmetro no topo da pilha. Ex:</p><pre>function log( msg ) {
+  msg asm{<strong>println # undefined</strong>};
+}
+
+log( 'Hello, world!' );<br></pre><p>Pode gerar:</p><pre>log &amp; log {} = '&amp;funcao' 16 [=] ^
+'Hello, world!' 1 log @ $ ^
+.
+msg &amp; msg arguments @ 0 [@] = ^
+msg @ <strong>println # undefined </strong>^
+undefined @ '&amp;retorno' @ ~
+</pre><br><p></p></div></div></div>
 </body>
