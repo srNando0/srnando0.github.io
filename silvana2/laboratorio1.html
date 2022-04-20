@@ -1,0 +1,58 @@
+<<!doctype html>
+<html>
+	<head>
+		<meta charset = "UTF-8">
+		<meta name = "author" content = "Luís Fernando Garcia Jales">
+		<meta name = "viewport" content = "width = device-width, initial-scale = 1.0">
+		<title>Laboratório 1</title>
+	</head>
+	<body>
+    <h1>Algoritmos testados em aula</h1>
+    <h3>Lado passivo</h3>
+    
+    
+    
+    <div style="color: #d4d4d4; background-color: #1e1e1e; font-family: Consolas, 'Courier New', monospace; font-weight: normal; font-size: 16px; line-height: 22px; white-space: pre;">
+<div><span style="color: #c586c0;">import</span> <span style="color: #4ec9b0;">socket</span></div>
+<br />
+<div><span style="color: #4fc1ff;">HOST</span><span style="color: #d4d4d4;"> = </span><span style="color: #ce9178;">'10.11.0.10'</span></div>
+<div><span style="color: #4fc1ff;">PORT</span><span style="color: #d4d4d4;"> = </span><span style="color: #b5cea8;">5000</span></div>
+<br />
+<div><span style="color: #9cdcfe;">server</span><span style="color: #d4d4d4;"> = </span><span style="color: #4ec9b0;">socket</span><span style="color: #d4d4d4;">.</span><span style="color: #4ec9b0;">socket</span><span style="color: #d4d4d4;">(</span><span style="color: #4ec9b0;">socket</span><span style="color: #d4d4d4;">.</span><span style="color: #9cdcfe;">AF_INET</span><span style="color: #d4d4d4;">, </span><span style="color: #4ec9b0;">socket</span><span style="color: #d4d4d4;">.</span><span style="color: #9cdcfe;">SOCK_STREAM</span><span style="color: #d4d4d4;">)</span></div>
+<div><span style="color: #9cdcfe;">server</span><span style="color: #d4d4d4;">.</span><span style="color: #dcdcaa;">bind</span><span style="color: #d4d4d4;">((</span><span style="color: #4fc1ff;">HOST</span><span style="color: #d4d4d4;">, </span><span style="color: #4fc1ff;">PORT</span><span style="color: #d4d4d4;">))</span></div>
+<div><span style="color: #9cdcfe;">server</span><span style="color: #d4d4d4;">.</span><span style="color: #dcdcaa;">listen</span><span style="color: #d4d4d4;">(</span><span style="color: #b5cea8;">2</span><span style="color: #d4d4d4;">)</span></div>
+<br />
+<div><span style="color: #9cdcfe;">conn</span><span style="color: #d4d4d4;">, </span><span style="color: #9cdcfe;">addr</span><span style="color: #d4d4d4;"> = </span><span style="color: #9cdcfe;">server</span><span style="color: #d4d4d4;">.</span><span style="color: #dcdcaa;">accept</span><span style="color: #d4d4d4;">()</span></div>
+<br />
+<div><span style="color: #c586c0;">while</span> <span style="color: #569cd6;">True</span><span style="color: #d4d4d4;">:</span></div>
+<div><span style="color: #d4d4d4;">&nbsp; &nbsp; </span><span style="color: #9cdcfe;">data</span><span style="color: #d4d4d4;"> = </span><span style="color: #9cdcfe;">conn</span><span style="color: #d4d4d4;">.</span><span style="color: #dcdcaa;">recv</span><span style="color: #d4d4d4;">(</span><span style="color: #b5cea8;">1024</span><span style="color: #d4d4d4;">)</span></div>
+<div><span style="color: #d4d4d4;">&nbsp; &nbsp; </span><span style="color: #c586c0;">if</span> <span style="color: #569cd6;">not</span> <span style="color: #9cdcfe;">data</span><span style="color: #d4d4d4;">:</span></div>
+<div><span style="color: #d4d4d4;">&nbsp; &nbsp; &nbsp; &nbsp; </span><span style="color: #c586c0;">break</span></div>
+<div><span style="color: #d4d4d4;">&nbsp; &nbsp; </span><span style="color: #9cdcfe;">conn</span><span style="color: #d4d4d4;">.</span><span style="color: #dcdcaa;">sendall</span><span style="color: #d4d4d4;">(</span><span style="color: #9cdcfe;">data</span><span style="color: #d4d4d4;">)</span></div>
+<br />
+<div><span style="color: #9cdcfe;">conn</span><span style="color: #d4d4d4;">.</span><span style="color: #dcdcaa;">close</span><span style="color: #d4d4d4;">()</span></div>
+</div>
+    
+    
+    
+    <h3>Lado ativo</h3>
+    
+    
+    <div style="color: #d4d4d4; background-color: #1e1e1e; font-family: Consolas, 'Courier New', monospace; font-weight: normal; font-size: 16px; line-height: 22px; white-space: pre;">
+<div><span style="color: #c586c0;">import </span><span style="color: #4ec9b0;">socket</span></div>
+<br />
+<div><span style="color: #4fc1ff;">HOST</span><span style="color: #d4d4d4;"> = </span><span style="color: #ce9178;">'localhost'</span></div>
+<div><span style="color: #4fc1ff;">PORT</span><span style="color: #d4d4d4;"> = </span><span style="color: #b5cea8;">5000</span></div>
+<br />
+<div><span style="color: #c586c0;">with </span><span style="color: #4ec9b0;">socket</span><span style="color: #d4d4d4;">.</span><span style="color: #4ec9b0;">socket</span><span style="color: #d4d4d4;">(</span><span style="color: #4ec9b0;">socket</span><span style="color: #d4d4d4;">.</span><span style="color: #9cdcfe;">AF_INET</span><span style="color: #d4d4d4;">, </span><span style="color: #4ec9b0;">socket</span><span style="color: #d4d4d4;">.</span><span style="color: #9cdcfe;">SOCK_STREAM</span><span style="color: #d4d4d4;">) </span><span style="color: #c586c0;">as </span><span style="color: #9cdcfe;">s</span><span style="color: #d4d4d4;">:</span></div>
+<div><span style="color: #d4d4d4;">&nbsp; &nbsp; </span><span style="color: #9cdcfe;">s</span><span style="color: #d4d4d4;">.</span><span style="color: #dcdcaa;">connect</span><span style="color: #d4d4d4;">((</span><span style="color: #4fc1ff;">HOST</span><span style="color: #d4d4d4;">, </span><span style="color: #4fc1ff;">PORT</span><span style="color: #d4d4d4;">))</span></div>
+<div><span style="color: #d4d4d4;">&nbsp; &nbsp; </span><span style="color: #9cdcfe;">s</span><span style="color: #d4d4d4;">.</span><span style="color: #dcdcaa;">sendall</span><span style="color: #d4d4d4;">(</span><span style="color: #569cd6;">b</span><span style="color: #ce9178;">"Hello World!"</span><span style="color: #d4d4d4;">)</span></div>
+<div><span style="color: #d4d4d4;">&nbsp; &nbsp; </span><span style="color: #9cdcfe;">data</span><span style="color: #d4d4d4;"> = </span><span style="color: #9cdcfe;">s</span><span style="color: #d4d4d4;">.</span><span style="color: #dcdcaa;">recv</span><span style="color: #d4d4d4;">(</span><span style="color: #b5cea8;">1024</span><span style="color: #d4d4d4;">)</span></div>
+<br />
+<div><span style="color: #dcdcaa;">print</span><span style="color: #d4d4d4;">(</span><span style="color: #569cd6;">f</span><span style="color: #ce9178;">"Received </span><span style="color: #569cd6;">{</span><span style="color: #9cdcfe;">data</span><span style="color: #569cd6;">!r}</span><span style="color: #ce9178;">"</span><span style="color: #d4d4d4;">)</span></div>
+</div>
+    
+    
+    
+	</body>
+</html>
