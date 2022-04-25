@@ -1,0 +1,35 @@
+body {
+	/*background-image: linear-gradient(to right, #404040 30%, #202020 70%);*/
+	background-color: #E0E0E0;
+	
+	font-family: Arial;
+}
+
+
+
+.classCenter {
+	text-align: center;
+}
+
+.classVideo {
+	float: right;
+}
+
+.classDescription {
+	width: 640px;
+	
+	margin-top: 16px;
+	padding-bottom: 16px;
+	
+	border-bottom-style: solid;
+}
+
+.classTable {
+	border-style: solid;
+	background-color: #FFFFFFFF;
+}
+
+.classTable tr, th, td {
+	padding: 4px;
+	border-style: solid;
+}
