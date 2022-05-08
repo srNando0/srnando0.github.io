@@ -1,0 +1,27 @@
+.circle {
+	width:130px;
+	height:130px;
+	border-radius: 50%;
+	float:left;
+	margin-right:50px;
+}
+
+
+
+.divPanel {
+	padding: 8px;
+}
+
+.divCircles {
+	padding: 8px;
+}
+
+
+
+.buttonAddCircle {
+	padding: 8px;
+	
+	font-family: Arial;
+	font-size: 16px;
+	font-weight: bold;
+}
