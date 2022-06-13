@@ -56,53 +56,6 @@ class RequestThread:
 	| Class Functions
 	+---------------
 	'''
-	# --| login |-- class function
-	# Description: process the login request
-	# Input: the request dictionary, the user address, and the dictionary of users
-	# Output: the response dictionary
-	def login(request, address, users):
-		response = {"operacao": "login"}
-		
-		user = request["username"]
-		port = request["porta"]
-		
-		if user in users:
-			response["status"] = 400
-			response["mensagem"] = "Username em Uso"
-		else:
-			response["status"] = 200
-			response["mensagem"] = "Login com sucesso"
-			
-			users[user] = {"Endereco": address[0], "Porta": str(port)}
-		
-		return response
-			
-			
-	
-	# --| logoff |-- class function
-	# Description: process the logoff request
-	# Input: the request dictionary and the dictionary of users
-	# Output: the response dictionary
-	def logoff(request, users):
-		try:
-			user = request["username"]
-			del users[user]
-			
-			return {"operacao": "logoff", "status": 200, "mensagem": "Logoff com sucesso"}
-		except:
-			return {"operacao": "get_lista", "status": 400, "mensagem": "Erro no Logoff"}
-	
-	
-	
-	# --| getList |-- class function
-	# Description: process the getList request
-	# Input: the dictionary of users
-	# Output: the response dictionary
-	def getList(users):
-		try:
-			return {"operacao": "get_lista", "status": 200, "clientes": users}
-		except:
-			return {"operacao": "get_lista", "status": 400, "mensagem": "Erro ao obter a lista"}
 	
 	
 	
@@ -127,55 +80,39 @@ class RequestThread:
 	
 	
 	# --| doRequest |-- method
-	# Description: receive, process the request, and send a response
+	# Description: receive and process the request, but do not send a response
 	# Input: empty
 	# Output: empty
 	def doRequest(self):
 		# do connection
 		conn, address = self.client.clientSocket.accept()
 		
-		# get size and text
+		# get data
 		size = int.from_bytes(conn.recv(1), byteorder = "little")
-		text = conn.recv(size - 1).decode("utf-8")
-		
-		# convert into JSON and produce a JSON response
-		try:
-			request = json.loads(text)			# load the JSON request
-			response = self.doResponse(request)	# produce a JSON response
-			data = jsonToData(response)			# convert it into bytes
-		except BaseException as e:
-			print(f"JSON loading error: {e}")				# show error
-			data = (1).to_bytes(1, byteorder = "little")	# data is x00
-		
-		# send the response data and close conection
-		conn.sendall(data)
+		data = conn.recv(size - 1)
+
 		conn.close()
 		
-	
-	
-	# --| doResponse |-- method
-	# Description: process the request and write a response based on the given request
-	# Input: a dictionary request and a tuple of the client's address and port
-	# Output: a dictionary response
-	def doResponse(self, request):
-		username = request["username"]
-		
-		with self.client.sharedMemoryLock:
-			messages = self.client.sharedMemory[username][0]
-			requests = self.client.sharedMemory['R']
+		# convert data into JSON and write the message on the chat
+		try:
+			request = json.loads(data.decode("utf-8"))	# load the JSON request
 			
-			response = None
+			username = request["username"]
+            message = request["mensagem"]
 			
-			if request["operacao"] == "login":
-				response = RequestThread.login(request, address, users)
-			elif request["operacao"] == "logoff":
-				response = RequestThread.logoff(request, users)
-			elif request["operacao"] == "get_lista":
-				response = RequestThread.getList(users)
-			
-			requests.append((address, request, response))
-		
-		return response
+			with self.client.sharedMemoryLock:
+				chats = self.client.sharedMemory
+				ip, port = self.client.users[username]
+				
+				if username not in chats:
+					chats[username] = Chat(self.client, username, ip, port)
+				
+				chat = chats[username]
+				chat.writeOnText(message)
+					
+				
+		except BaseException as e:
+			print(f"JSON loading error: {e}")			# show error
 
 
 
@@ -194,6 +131,7 @@ class Chat:
 		self.username = username
 		self.ip = ip
 		self.port = port
+		self.textLock = Lock()
 		
 		self.declareWidgets()
 		self.packWidgets()
@@ -226,6 +164,25 @@ class Chat:
 	| Widget Events
 	+---------------
 	'''
+	def sendButtonEvent(self):
+		# create the request data
+		request = {
+			"username": self.client.username,
+			"mensagem": self.sendEntryStringVar.get()
+		}
+		
+		data = jsonToData(request)
+		
+		try:
+			with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+				s.connect((self.host, self.hostPort))
+				s.sendall(data)
+		except:
+			messagebox.showerror("Chat error", f"The application could not send the message!\n{e}")
+		
+		with textLock:
+			self.writeOnText(message)
+		
 	
 	
 	
@@ -256,7 +213,7 @@ class Chat:
 		self.sendEntry = ttk.Entry(self.sendFrame, textvariable = self.sendEntryStringVar)
 		
 		# send button
-		self.sendButton = ttk.Button(self.sendFrame, text = "Send", command = None)
+		self.sendButton = ttk.Button(self.sendFrame, text = "Send", command = sendButtonEvent)
 	
 	
 	
@@ -298,13 +255,11 @@ class Client:
 		self.host = None		# server ip
 		self.hostPort = None	# server port
 		
-		self.users = {}	# dictionary of ip and port of each logged in user
-		
 		# create widgets, put them on the window, and run the window
 		self.declareWidgets()
 		self.packWidgets()
 		
-		self.testChat = Chat(self, "lixão", "", 0)
+		#self.testChat = Chat(self, "lixão", "", 0)
 		
 		self.root.mainloop()
 	
@@ -315,6 +270,18 @@ class Client:
 	| Methods
 	+---------------
 	'''
+	# --| declareRequestThreads |-- method
+	# Description: initiate variables for request handling
+	# Input: empty
+	# Output: empty
+	def declareRequestThreads(self):
+		self.sharedMemory = {}
+		self.sharedMemoryLock = Lock()
+		
+		self.users = {}
+	
+	
+	
 	# --| declareUsernameHostPort |-- method
 	# Description: declare username, host, and port from their correspondent widget entries
 	# Input: empty
@@ -495,12 +462,7 @@ class Client:
 	
 	# chat button event
 	def chatButtonEvent(self):
-		#print("Chatting!")
-		messagebox.showinfo("Message", f"Chatting with {self.userListbox.get(tk.ANCHOR)}!")
-		print(self.testToplevel)
-		self.testToplevel.destroy()
-		self.testToplevel.update()
-		print(self.testToplevel)
+		
 	
 	
 	
