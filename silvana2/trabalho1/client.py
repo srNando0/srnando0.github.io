@@ -1,4 +1,5 @@
 import socket
+from threading import Thread, Lock
 import json
 
 import tkinter as tk
@@ -19,14 +20,14 @@ from tkinter import messagebox
 def jsonToData(response):
 	# get message size
 	text = json.dumps(response, separators = (',', ':'))
-	size = min(len(text), 254)
+	size = min(len(text), 256*256 - 3)
 	
 	# limit the message size
 	text = text[:size]
 	
 	# concatenate the first byte(size) with the message, and return
-	size += 1
-	arr = [size.to_bytes(1, byteorder = "little"), text.encode("utf-8")]
+	size += 2
+	arr = [size.to_bytes(2, byteorder = "big"), text.encode("utf-8")]
 	return b''.join(arr)
 
 
@@ -72,10 +73,10 @@ class RequestThread:
 	# Input: empty
 	# Output: empty
 	def run(self):
-		try:
-			self.doRequest()
-		except BaseException as e:
-			print(f"Request accepting error: {str(e)}")
+		#try:
+		self.doRequest()
+		#except BaseException as e:
+			#print(f"Request accepting error: {str(e)}")
 	
 	
 	
@@ -88,31 +89,34 @@ class RequestThread:
 		conn, address = self.client.clientSocket.accept()
 		
 		# get data
-		size = int.from_bytes(conn.recv(1), byteorder = "little")
-		data = conn.recv(size - 1)
+		size = int.from_bytes(conn.recv(2), byteorder = "big")
+		data = conn.recv(size)
 
 		conn.close()
+
+		print(data.decode("utf-8"))
 		
 		# convert data into JSON and write the message on the chat
-		try:
-			request = json.loads(data.decode("utf-8"))	# load the JSON request
+		#try:
+		request = json.loads(data.decode("utf-8"))	# load the JSON request
+		
+		username = request["username"]
+		message = request["mensagem"]
+		
+		with self.client.sharedMemoryLock:
+			chats = self.client.sharedMemory
+
+			user = self.client.users[username]
 			
-			username = request["username"]
-            message = request["mensagem"]
+			if username not in chats:
+				chats[username] = Chat(self.client, username, user["Endereco"], user["Porta"])
 			
-			with self.client.sharedMemoryLock:
-				chats = self.client.sharedMemory
-				ip, port = self.client.users[username]
-				
-				if username not in chats:
-					chats[username] = Chat(self.client, username, ip, port)
-				
-				chat = chats[username]
-				chat.writeOnText(message)
+			chat = chats[username]
+			chat.writeOnText(message)
 					
 				
-		except BaseException as e:
-			print(f"JSON loading error: {e}")			# show error
+		#except BaseException as e:
+		#	print(f"JSON loading error: {e}")			# show error
 
 
 
@@ -173,12 +177,13 @@ class Chat:
 		
 		data = jsonToData(request)
 		
-		try:
-			with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-				s.connect((self.host, self.hostPort))
-				s.sendall(data)
-		except:
-			messagebox.showerror("Chat error", f"The application could not send the message!\n{e}")
+		#try:
+		print(self.ip, self.port)
+		with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+			s.connect((self.ip, self.port))
+			s.sendall(data)
+		#except BaseException as e:
+		#	messagebox.showerror("Chat error", f"The application could not send the message!\n{e}")
 		
 		with textLock:
 			self.writeOnText(message)
@@ -213,7 +218,7 @@ class Chat:
 		self.sendEntry = ttk.Entry(self.sendFrame, textvariable = self.sendEntryStringVar)
 		
 		# send button
-		self.sendButton = ttk.Button(self.sendFrame, text = "Send", command = sendButtonEvent)
+		self.sendButton = ttk.Button(self.sendFrame, text = "Send", command = self.sendButtonEvent)
 	
 	
 	
@@ -264,6 +269,23 @@ class Client:
 		self.root.mainloop()
 	
 	
+
+	'''
+	+---------------
+	| Functions
+	+---------------
+	'''
+	# --| requestThreadMain |-- class method
+	# Description: requestThread main function
+	# Input: the Server object
+	# Output: empty
+	def requestThreadMain(client):
+		request = RequestThread(client)
+		
+		while client.loginLogoffBooleanVar.get():
+			request.run()
+
+
 	
 	'''
 	+---------------
@@ -279,6 +301,35 @@ class Client:
 		self.sharedMemoryLock = Lock()
 		
 		self.users = {}
+	
+
+
+	# --| bind |-- method
+	# Description: bind the server's socket
+	# Input: empty
+	# Output: empty
+	def bind(self):
+		# test
+		self.usernameIP = '10.11.0.28'
+		
+		self.clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		
+		self.clientSocket.bind((self.usernameIP, self.usernamePort))
+		self.clientSocket.listen(5)
+		self.clientSocket.setblocking(True)
+	
+	
+	
+	# --| run |-- method
+	# Description: run the server and the GUI polling through runRadiobutton
+	# Input: empty
+	# Output: empty
+	def run(self):
+		self.declareRequestThreads()
+		
+		requestThread = Thread(target = Client.requestThreadMain, args = (self,))
+		requestThread.daemon = True
+		requestThread.start()
 	
 	
 	
@@ -315,7 +366,7 @@ class Client:
 			s.sendall(data)
 			
 			# get size and text
-			size = int.from_bytes(s.recv(1), byteorder = "little")
+			size = int.from_bytes(s.recv(2), byteorder = "big")
 			text = s.recv(size).decode("utf-8")
 		
 		# process response
@@ -352,7 +403,7 @@ class Client:
 			s.sendall(data)
 			
 			# get size and text
-			size = int.from_bytes(s.recv(1), byteorder = "little")
+			size = int.from_bytes(s.recv(2), byteorder = "big")
 			text = s.recv(size).decode("utf-8")
 		
 		# process response
@@ -388,7 +439,7 @@ class Client:
 			s.sendall(data)
 			
 			# get size and text
-			size = int.from_bytes(s.recv(1), byteorder = "little")
+			size = int.from_bytes(s.recv(2), byteorder = "big")
 			text = s.recv(size).decode("utf-8")
 		
 		# process response
@@ -399,6 +450,7 @@ class Client:
 		
 		if status == 200:
 			self.users = response["clientes"]
+			print(self.users)
 			self.userListboxStringVar.set(list(self.users.keys()))
 		elif status == 400:
 			message = response["mensagem"]
@@ -428,6 +480,8 @@ class Client:
 			try:
 				self.declareUsernameHostPort()
 				self.login()
+				self.bind()
+				self.run()
 				messagebox.showinfo("Client status", f"Logging in as {self.usernameEntryStringVar.get()}!")
 			except BaseException as e:
 				self.loginLogoffBooleanVar.set(False)
@@ -462,7 +516,13 @@ class Client:
 	
 	# chat button event
 	def chatButtonEvent(self):
-		
+		username = self.userListbox.get(tk.ANCHOR)
+		self.getList()
+		try:
+			with self.sharedMemory:
+				pass
+		except BaseException as e:
+			messagebox.showerror("Client error", f"Fail to chat!\n{e}")
 	
 	
 	
@@ -620,3 +680,4 @@ class Client:
 '''
 if __name__ == "__main__":
 	client = Client()
+
