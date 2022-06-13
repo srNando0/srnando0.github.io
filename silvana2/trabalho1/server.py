@@ -20,14 +20,14 @@ from tkinter import messagebox
 def jsonToData(response):
 	# get message size
 	text = json.dumps(response, separators = (',', ':'))
-	size = min(len(text), 254)
+	size = min(len(text), 256*256 - 1)
 	
 	# limit the message size
 	text = text[:size]
 	
 	# concatenate the first byte(size) with the message, and return
-	size += 1
-	arr = [size.to_bytes(1, byteorder = "little"), text.encode("utf-8")]
+	#size += 2
+	arr = [size.to_bytes(2, byteorder = "big"), text.encode("utf-8")]
 	return b''.join(arr)
 
 
@@ -136,8 +136,8 @@ class RequestThread:
 		conn, address = self.server.serverSocket.accept()
 		
 		# get size and text
-		size = int.from_bytes(conn.recv(1), byteorder = "little")
-		text = conn.recv(size - 1).decode("utf-8")
+		size = int.from_bytes(conn.recv(2), byteorder = "big")
+		text = conn.recv(size).decode("utf-8")
 		
 		# convert into JSON and produce a JSON response
 		try:
@@ -146,7 +146,7 @@ class RequestThread:
 			data = jsonToData(response)						# convert it into bytes
 		except BaseException as e:
 			print(f"JSON loading error: {e}")				# show error
-			data = (1).to_bytes(1, byteorder = "little")	# data is x00
+			data = (1).to_bytes(1, byteorder = "big")	# data is x00
 		
 		# send the response data and close conection
 		conn.sendall(data)
@@ -563,3 +563,4 @@ class Server:
 '''
 if __name__ == "__main__":
 	server = Server()
+
