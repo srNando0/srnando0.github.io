@@ -1,6 +1,5 @@
 import socket
 from threading import Thread, Lock
-from queue import Queue
 import json
 
 import tkinter as tk
@@ -14,18 +13,26 @@ from tkinter import messagebox
 | Functions
 +---------------
 '''
-# convert JSON response to data
+# --| jsonToData |-- function
+# Description: convert JSON response to data
+# Input: a response dictionary
+# Output: a data composed by 1 byte representing the size of the whole data, concatenated with the remaining bytes
 def jsonToData(response):
 	# get message size
-	text = json.dumps(response)
-	size = min(len(text), 255)
+	text = json.dumps(response, separators = (',', ':'))
+	size = min(len(text), 254)
 	
 	# limit the message size
 	text = text[:size]
 	
 	# concatenate the first byte(size) with the message, and return
+	size += 1
 	arr = [size.to_bytes(1, byteorder = "little"), text.encode("utf-8")]
 	return b''.join(arr)
+
+
+
+# ----------------
 
 
 
@@ -34,9 +41,69 @@ def jsonToData(response):
 | Classes
 +---------------
 '''
+# --| RequestThread |-- class
+# Description: do the request-response comunication
 class RequestThread:
+	# RequestThread constructor
+	# Description: declare the class's atributes
+	# Input: a Server object
 	def __init__(self, server):
 		self.server = server
+	
+	
+	
+	'''
+	+---------------
+	| Class Functions
+	+---------------
+	'''
+	# --| login |-- class function
+	# Description: process the login request
+	# Input: the request dictionary, the user address, and the dictionary of users
+	# Output: the response dictionary
+	def login(request, address, users):
+		response = {"operacao": "login"}
+		
+		user = request["username"]
+		port = request["porta"]
+		
+		if user in users:
+			response["status"] = 400
+			response["mensagem"] = "Username em Uso"
+		else:
+			response["status"] = 200
+			response["mensagem"] = "Login com sucesso"
+			
+			users[user] = {"Endereco": address[0], "Porta": port}
+		
+		return response
+			
+			
+	
+	# --| logoff |-- class function
+	# Description: process the logoff request
+	# Input: the request dictionary and the dictionary of users
+	# Output: the response dictionary
+	def logoff(request, users):
+		try:
+			user = request["username"]
+			del users[user]
+			
+			return {"operacao": "logoff", "status": 200, "mensagem": "Logoff com sucesso"}
+		except:
+			return {"operacao": "get_lista", "status": 400, "mensagem": "Erro no Logoff"}
+	
+	
+	
+	# --| getList |-- class function
+	# Description: process the getList request
+	# Input: the dictionary of users
+	# Output: the response dictionary
+	def getList(users):
+		try:
+			return {"operacao": "get_lista", "status": 200, "clientes": users}
+		except:
+			return {"operacao": "get_lista", "status": 400, "mensagem": "Erro ao obter a lista"}
 	
 	
 	
@@ -45,6 +112,13 @@ class RequestThread:
 	| Methods
 	+---------------
 	'''
+	
+	
+	
+	# --| run |-- method
+	# Description: do a single request-response comunication talk
+	# Input: empty
+	# Output: empty
 	def run(self):
 		try:
 			self.doRequest()
@@ -53,22 +127,23 @@ class RequestThread:
 	
 	
 	
-	# receive, process the request, and send a response
+	# --| doRequest |-- method
+	# Description: receive, process the request, and send a response
+	# Input: empty
+	# Output: empty
 	def doRequest(self):
 		# do connection
 		conn, address = self.server.serverSocket.accept()
 		
 		# get size and text
 		size = int.from_bytes(conn.recv(1), byteorder = "little")
-		text = conn.recv(size).decode("utf-8")
-		
-		print(text)
+		text = conn.recv(size - 1).decode("utf-8")
 		
 		# convert into JSON and produce a JSON response
 		try:
-			request = json.loads(text)				# load the JSON request
-			response = self.doResponse(request)		# produce a JSON response
-			data = jsonToData(response)	# convert it into bytes
+			request = json.loads(text)						# load the JSON request
+			response = self.doResponse(request, address)	# produce a JSON response
+			data = jsonToData(response)						# convert it into bytes
 		except BaseException as e:
 			print(f"JSON loading error: {e}")				# show error
 			data = (1).to_bytes(1, byteorder = "little")	# data is x00
@@ -79,89 +154,51 @@ class RequestThread:
 		
 	
 	
-	
-	# write a response based on the given request
-	def doResponse(self, request):
+	# --| doResponse |-- method
+	# Description: process the request and write a response based on the given request
+	# Input: a dictionary request and a tuple of the client's address and port
+	# Output: a dictionary response
+	def doResponse(self, request, address):
 		with self.server.sharedMemoryLock:
-			userToPort = self.server.sharedMemory['U']
-			requestsQueue = self.server.sharedMemory['R']
+			users = self.server.sharedMemory['U']
+			requests = self.server.sharedMemory['R']
 			
 			response = None
 			
 			if request["operacao"] == "login":
-				response = RequestThread.login(request, userToPort)
+				response = RequestThread.login(request, address, users)
 			elif request["operacao"] == "logoff":
-				response = RequestThread.logoff(request, userToPort)
+				response = RequestThread.logoff(request, users)
 			elif request["operacao"] == "get_lista":
-				response = RequestThread.getList(userToPort)
+				response = RequestThread.getList(users)
 			
-			requestsQueue.put(response)
-			return response
-	
-	
-	
-	def login(request, userToPort):
-		response = {"operacao": "login"}
-		
-		user = request["username"]
-		port = request["porta"]
-		
-		if user in userToPort:
-			response["status"] = 400
-			response["mensagem"] = "Username em Uso"
-		else:
-			response["status"] = 200
-			response["mensagem"] = "Login com sucesso"
-			
-			userToPort[user] = port
+			requests.append((address, request, response))
 		
 		return response
-			
-			
-	
-	def logoff(request, userToPort):
-		try:
-			user = request["username"]
-			del userToPort[user]
-			
-			return {"operacao": "logoff", "status": 200, "mensagem": "Logoff com sucesso"}
-		except:
-			return {"operacao": "get_lista", "status": 400, "mensagem": "Erro no Logoff"}
-	
-	
-	
-	def getList(userToPort):
-		try:
-			return {"operacao": "get_lista", "status": 200, "clientes": userToPort}
-		except:
-			return {"operacao": "get_lista", "status": 400, "mensagem": "Erro ao obter a lista"}
 
 
 
+# ----------------
+
+
+
+# --| Server |-- class
+# Description: deal with window, its widgets, and the requestThreads
 class Server:
+	# Server constructor
+	# Description: declare the class's atributes, initiates the widgets, and run the window
+	# Input: empty
 	def __init__(self):
-		self.host = None
-		self.port = None
-		self.serverSocket = None
+		# declare atributes
+		self.host = None			# server ip
+		self.port = None			# server port
+		self.serverSocket = None	# server socket
 		
-		self.declareRequestThreads()
-		
+		# create widgets, put them on the window, and run the window
 		self.declareWidgets()
 		self.packWidgets()
 		
-		self.test()
-		
 		self.root.mainloop()
-	
-	
-	
-	# initiate variables for request handling
-	def declareRequestThreads(self):
-		self.sharedMemory = {
-			'U': {},
-			'R': Queue()
-		}
-		self.sharedMemoryLock = Lock()
 	
 	
 	
@@ -170,7 +207,10 @@ class Server:
 	| Functions
 	+---------------
 	'''
-	# requestThread main function
+	# --| requestThreadMain |-- class method
+	# Description: requestThread main function
+	# Input: the Server object
+	# Output: empty
 	def requestThreadMain(server):
 		request = RequestThread(server)
 		
@@ -184,7 +224,25 @@ class Server:
 	| Methods
 	+---------------
 	'''
-	# binding the server
+	# --| declareRequestThreads |-- method
+	# Description: initiate variables for request handling
+	# Input: empty
+	# Output: empty
+	def declareRequestThreads(self):
+		self.sharedMemory = {
+			'U': {},
+			'R': []
+		}
+		self.sharedMemoryLock = Lock()
+		
+		self.users = {}
+	
+	
+	
+	# --| bind |-- method
+	# Description: bind the server's socket
+	# Input: empty
+	# Output: empty
 	def bind(self):
 		self.host = self.hostEntryStringVar.get()
 		self.port = int(self.portEntryStringVar.get())
@@ -195,15 +253,29 @@ class Server:
 		self.serverSocket.listen(5)
 		self.serverSocket.setblocking(True)
 	
-	# run the server and the GUI polling
+	
+	
+	# --| run |-- method
+	# Description: run the server and the GUI polling through runRadiobutton
+	# Input: empty
+	# Output: empty
 	def run(self):
+		self.declareRequestThreads()
+		self.clearText()
+		self.userListboxStringVar.set([])
+		
 		requestThread = Thread(target = Server.requestThreadMain, args = (self,))
 		requestThread.daemon = True
 		requestThread.start()
 		
 		self.requestText.after(1000, self.requestTextAfter)
 	
-	# stop the server
+	
+	
+	# --| stop |-- method
+	# Description: stop the server through stopRadiobutton
+	# Input: empty
+	# Output: empty
 	def stop(self):
 		self.runStopBooleanVar.set(False)
 		if self.serverSocket is not None:
@@ -211,48 +283,66 @@ class Server:
 	
 	
 	
-	# GUI polling
+	# --| requestTextAfter |-- method
+	# Description: window GUI polling
+	# Input: empty
+	# Output: empty
 	def requestTextAfter(self):
 		self.gui()
 		if self.runStopBooleanVar.get():
 			self.root.after(1000, self.requestTextAfter)
 	
-	# update the GUI
+	
+	
+	# --| gui |-- method
+	# Description: update the GUI
+	# Input: empty
+	# Output: empty
 	def gui(self):
-		self.writeOnText("text by server class")
+		# get data
+		with self.sharedMemoryLock:
+			self.users = self.sharedMemory['U'].copy()
+			
+			requests = self.sharedMemory['R'].copy()
+			self.sharedMemory['R'] = []
+		
+		# exhibit logged users
+		self.userListboxStringVar.set(list(self.users.keys()))
+		
+		for r in requests:
+			address, request, response = r
+			
+			self.writeOnText(f"----{address}----\nRequest: {request}\nResponse: {response}")
 	
 	
 	
-	# write on text
-	def writeOnText(self, string):
+	# --| clearText |-- method
+	# Description: clear the window text
+	# Input: empty
+	# Output: empty
+	def clearText(self):
 		self.requestText.config(state = tk.NORMAL)
-		if 1 < len(self.requestText.get(1.0, tk.END)):
-			self.requestText.insert(tk.END, "\n")
-		self.requestText.insert(tk.END, string)
+		
+		self.requestText.delete('1.0', tk.END)
+		self.requestText.see(tk.END)
+		
 		self.requestText.config(state = tk.DISABLED)
 	
 	
 	
-	# test
-	def test(self):
-		req = RequestThread(self)
+	# --| writeOnText |-- method
+	# Description: write on the window text similar to python's built-in print function
+	# Input: a string
+	# Output: empty
+	def writeOnText(self, string):
+		self.requestText.config(state = tk.NORMAL)
 		
-		request1 = {"operacao": "login", "username": "luanzinho32", "porta": 5000}
-		request2 = {"operacao": "logoff", "username": "luanzinho32"}
-		request3 = {"operacao": "get_lista"}
+		if 1 < len(self.requestText.get(1.0, tk.END)):
+			self.requestText.insert(tk.END, "\n")
+		self.requestText.insert(tk.END, string)
+		self.requestText.see(tk.END)
 		
-		req.doResponse(request1)
-		req.doResponse(request2)
-		req.doResponse(request3)
-		
-		with self.sharedMemoryLock:
-			users = self.sharedMemory['U']
-			queue = self.sharedMemory['R']
-			
-			while not queue.empty():
-				print(f"response: {queue.get()}")
-			
-			print(f"usuários: {users}")
+		self.requestText.config(state = tk.DISABLED)
 	
 	
 	
@@ -263,28 +353,52 @@ class Server:
 	'''
 	# run and stop radiobuttons event
 	def runStopRadiobuttonEvent(self):
-		b1 = self.runStopBoolean
-		b2 = self.runStopBooleanVar.get()
+		# run and stop the server based on radiobuttons
+		if self.runStopBooleanVar.get():
+			# run the server
+			try:
+				self.bind()
+				self.run()
+				messagebox.showinfo("Server status", "Server running!")
+			except BaseException as e:
+				self.runStopBooleanVar.set(False)
+				messagebox.showerror("Server error", f"Error during server running!\n{str(e)}")
+				return
+		else:
+			# stop the server
+			try:
+				self.stop()
+				messagebox.showinfo("Server status", "Server stopped!")
+			except BaseException as e:
+				self.runStopBooleanVar.set(True)
+				messagebox.showerror("Server error", f"Error during server stopping!\n{str(e)}")
 		
-		if ((not b1) and b2) or (b1 and (not b2)):
-			if b2:
-				try:
-					self.bind()
-					self.run()
-					messagebox.showinfo("Message", "Server running!")
-				except BaseException as e:
-					messagebox.showinfo("Message", f"Error during server running!\n{str(e)}")
-					self.runStopBooleanVar.set(False)
-					return
-			else:
-				try:
-					self.stop()
-					messagebox.showinfo("Message", "Server stopped!")
-				except BaseException as e:
-					messagebox.showinfo("Message", f"Error during server stopping!\n{str(e)}")
-					self.runStopBooleanVar.set(True)
+		# toggle states of entries and display whenever logging in or logging off
+		runState = tk.NORMAL
+		stopState = tk.DISABLED
+		if self.runStopBooleanVar.get():
+			runState = tk.DISABLED
+			stopState = tk.NORMAL
 		
-		self.runStopBoolean = b2
+		self.runRadiobutton.config(state = runState)
+		for child in self.hostPortFrame.winfo_children():
+			child.config(state = runState)
+			
+		self.stopRadiobutton.config(state = stopState)
+		self.userListbox.config(state = stopState)
+		self.userButton.config(state = stopState)
+	
+	
+	
+	# get user's IP and Port
+	def userButtonEvent(self):
+		username = self.userListbox.get(tk.ANCHOR)
+		
+		if username in self.users:
+			userInfo = self.users[username]
+			messagebox.showinfo(f"{username} info", f'IP: {userInfo["Endereco"]}\nPort: {userInfo["Porta"]}')
+		else:
+			messagebox.showerror("Username error", f"The application could not get username details\n Username selected: {username}")
 	
 	
 	
@@ -312,7 +426,7 @@ class Server:
 		# root
 		self.root = tk.Tk()
 		self.root.title("Server")
-		self.root.geometry("850x510")
+		self.root.geometry("860x510")
 		self.root.protocol("WM_DELETE_WINDOW", self.exitButtonEvent)
 		#root.resizable(False, False)
 		
@@ -322,6 +436,7 @@ class Server:
 		self.rightFrame = ttk.Frame(self.root, padding = 8, borderwidth = 2, relief = "groove")
 		self.hostPortFrame = ttk.Frame(self.topFrame)
 		self.runStopFrame = ttk.Frame(self.topFrame)
+		self.usersFrame = ttk.Frame(self.leftFrame, padding = 8)
 		self.requestFrame = ttk.Frame(self.rightFrame)
 		
 		# separators
@@ -359,6 +474,7 @@ class Server:
 			text = "Stop",
 			variable = self.runStopBooleanVar,
 			value = False,
+			state = tk.DISABLED,
 			background = "#c04040",
 			borderwidth = 2,
 			relief = "groove",
@@ -366,12 +482,15 @@ class Server:
 		)
 		
 		# list of users
-		self.userListStringVar = tk.StringVar(self.leftFrame)
-		self.userListBox = tk.Listbox(self.leftFrame, listvariable = self.userListStringVar)
+		self.userListboxStringVar = tk.StringVar(self.usersFrame)
+		self.userListbox = tk.Listbox(self.usersFrame, state = tk.DISABLED, listvariable = self.userListboxStringVar)
 		
 		# scrollbar of the list of users
-		self.userScrollbar = ttk.Scrollbar(self.leftFrame, command = self.userListBox.yview)
-		self.userListBox.config(yscrollcommand = self.userScrollbar.set)
+		self.userScrollbar = ttk.Scrollbar(self.usersFrame, command = self.userListbox.yview)
+		self.userListbox.config(yscrollcommand = self.userScrollbar.set)
+		
+		# user button
+		self.userButton = ttk.Button(self.leftFrame, text = "Get User's\nIP and Port", state = tk.DISABLED, command = self.userButtonEvent)
 		
 		# requests shown on a text widget
 		self.requestText = tk.Text(self.requestFrame, state = tk.DISABLED)
@@ -417,8 +536,11 @@ class Server:
 		
 		
 		# left frame
-		self.userListBox.pack(side = tk.LEFT, fill = tk.BOTH, expand = True)
+		self.usersFrame.pack(side = tk.TOP, fill = tk.BOTH, expand = True)
+		self.userListbox.pack(side = tk.LEFT, fill = tk.BOTH, expand = True)
 		self.userScrollbar.pack(side = tk.RIGHT, fill = tk.Y)
+		
+		self.userButton.pack(side = tk.BOTTOM, fill = tk.X)
 		
 		# right frame
 		self.requestFrame.pack(side = tk.TOP, fill = tk.BOTH, expand = True)
@@ -427,6 +549,10 @@ class Server:
 		
 		#testButton.pack(side = tk.TOP, fill = tk.X)
 		self.exitButton.pack(side = tk.BOTTOM, fill = tk.X)
+
+
+
+# ----------------
 
 
 
