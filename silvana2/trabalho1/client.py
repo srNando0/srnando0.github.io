@@ -277,7 +277,7 @@ class Chat:
 	def packWidgets(self):
 		# main frames
 		self.messageFrame.pack(side = tk.TOP, fill = tk.BOTH, expand = True)
-		self.sendFrame.pack(side = tk.TOP, fill = tk.BOTH, expand = True)
+		self.sendFrame.pack(side = tk.TOP, fill = tk.X)
 		
 		# message frame
 		self.messageText.pack(side = tk.LEFT, fill = tk.BOTH, expand = True)
