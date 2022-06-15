@@ -20,14 +20,29 @@ from tkinter import messagebox
 def jsonToData(response):
 	# get message size
 	text = json.dumps(response, separators = (',', ':'))
-	size = min(len(text), 256*256 - 1)
+	size = min(len(text), 65535 - 2)
 	
 	# limit the message size
 	text = text[:size]
 	
 	# concatenate the first byte(size) with the message, and return
-	#size += 2
+	size += 2
 	arr = [size.to_bytes(2, byteorder = "big"), text.encode("utf-8")]
+	return b''.join(arr)
+
+
+
+def recvAll(conn):
+	# get size and text
+	size = int.from_bytes(conn.recv(2), byteorder = "big")
+	arr = []
+	
+	x = size
+	while 0 < x:
+		s = min(x, 1024)
+		arr.append(conn.recv(s))
+		x -= 1024
+	
 	return b''.join(arr)
 
 
@@ -136,8 +151,7 @@ class RequestThread:
 		conn, address = self.server.serverSocket.accept()
 		
 		# get size and text
-		size = int.from_bytes(conn.recv(2), byteorder = "big")
-		text = conn.recv(size).decode("utf-8")
+		text = recvAll(conn).decode("utf-8")
 		
 		# convert into JSON and produce a JSON response
 		try:
@@ -146,7 +160,7 @@ class RequestThread:
 			data = jsonToData(response)						# convert it into bytes
 		except BaseException as e:
 			print(f"JSON loading error: {e}")				# show error
-			data = (1).to_bytes(1, byteorder = "big")	# data is x00
+			data = (2).to_bytes(2, byteorder = "big")	# data is x00
 		
 		# send the response data and close conection
 		conn.sendall(data)
@@ -426,7 +440,7 @@ class Server:
 		# root
 		self.root = tk.Tk()
 		self.root.title("Server")
-		self.root.geometry("860x510")
+		self.root.geometry("940x580")
 		self.root.protocol("WM_DELETE_WINDOW", self.exitButtonEvent)
 		#root.resizable(False, False)
 		
@@ -453,7 +467,7 @@ class Server:
 		self.portLabel = ttk.Label(self.hostPortFrame, text = "Port:")
 		
 		# port entry
-		self.portEntryStringVar = tk.StringVar(self.rightFrame, value = "32768")
+		self.portEntryStringVar = tk.StringVar(self.rightFrame, value = "30000")
 		self.portEntry = ttk.Entry(self.hostPortFrame, textvariable = self.portEntryStringVar)
 		
 		# run stop Radiobuttons
@@ -493,7 +507,7 @@ class Server:
 		self.userButton = ttk.Button(self.leftFrame, text = "Get User's\nIP and Port", state = tk.DISABLED, command = self.userButtonEvent)
 		
 		# requests shown on a text widget
-		self.requestText = tk.Text(self.requestFrame, state = tk.DISABLED)
+		self.requestText = tk.Text(self.requestFrame, state = tk.DISABLED, font = ('Consolas', 8, 'normal'))
 		
 		# scrollbar of the requests' text
 		self.requestScrollbar = ttk.Scrollbar(self.requestFrame, command = self.requestText.yview)
@@ -563,4 +577,3 @@ class Server:
 '''
 if __name__ == "__main__":
 	server = Server()
-
