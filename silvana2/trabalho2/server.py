@@ -1,4 +1,6 @@
 from enum import Enum
+
+import random
 import socket
 import json
 
@@ -90,151 +92,365 @@ class CardSuit(Enum):
 
 
 
-# --| Play |-- Enum
-# Description: enumerates the types of what a player can do
-class Play(Enum):
-	CARD = 0
-	HIDE = 1
-	TRUCO = 2
-
-
-
 class Card:
-	def __init__(self, value, suit, isManilha):
+	def __init__(self, game, value, suit):
+		self.game = game
 		self.value = value
 		self.suit = suit
-		self.isManilha = isManilha
 	
 	
 	
 	def number(self):
-		return 10 + self.suit if self.isManilha else self.value
+		manilhaValue = (self.game.mao.vira.value + 1)%10
+		return 10 + self.suit if self.value == manilhaValue else self.value
 	
 	
 	
 	def __lt__(self, other):
-		return 
+		return self.number() < other.number()
+	
+	def __gt__(self, other):
+		return self.number() > other.number()
+	
+	def __le__(self, other):
+		return self.number() <= other.number()
+	
+	def __ge__(self, other):
+		return self.number() >= other.number()
+	
+	def __eq__(self, other):
+		return self.number() == other.number()
+	
+	def __ne__(self, other):
+		return self.number() != other.number()
 
 
 
 # --| Deck |-- Class
 # Description: the cards' deck
 class Deck:
-	def __init__(self):
-		pass
+	def __init__(self, game):
+		self.game = game
+		self.cardList = [Card(game, v, s) for s in range(4) for v in range(10)]
+	
+	
+	
+	def shuffle(self):
+		self.cardNumber = 0
+		random.shuffle(self.cardList)
 	
 	
 	
 	def takeCard(self):
-		pass
+		card = self.cardList[self.cardNumber]
+		self.cardNumber += 1
+		
+		return card
+
+
+
+# ----------------
 
 
 
 # --| Player |-- Class
 # Description: the player's data structure
 class Player:
-	def __init__(self, team):
+	def __init__(self, game, team):
+		self.game = game
 		self.team = team
-
-
-
-# --| Truco |-- Class
-# Description: class where the whole game will be running
-class Truco:
-	def __init__(self):
-		self.resetGame()
 	
 	
 	
-	def resetGame(self):
-		# players
-		self.playerList = []
+	def getCards(self):
+		deck = self.game.deck
 		
-		# game status
-		self.redTeamPoints = 0
-		self.blueTeamPoints = 0
+		self.cards = set()
+		for _ in range(3):
+			self.cards.add(deck.takeCard())
+	
+	
+	
+	def play():
+		# test
+		x = json.dumps(input())
+
+
+
+# ----------------
+
+
+
+# --| Vaza |-- Class
+# Description: Vaza of mao
+class Vaza:
+	def __init__(self, game, firstPlayerNumber):
+		self.game = game
+		self.firstPlayerNumber = firstPlayerNumber
 		
-		# mao status
-		self.maoValue = 0
+		self.canHide = False
+		self.refused = False
+		
+		self.cardList = [None, None, None, None]
+	
+	
+	
+	def start(self):
+		self.bestPlayerNumber = self.firstPlayerNumber
+		self.highestCard = None
+		self.result = TeamPoint.DRAW
+	
+	
+	
+	def updateResult(self, playerNumber, player):
+		# defining the highest card and its player
+		if self.highestCard is None:
+			# first player
+			self.bestPlayerNumber = playerNumber
+			self.highestCard = player.card
+			self.result = player.team
+		elif self.highestCard <= player.card:
+			# card not lower
+			self.bestPlayerNumber = playerNumber
+			
+			if self.highestCard == player.card:
+				# same card value
+				self.result = TeamPoint.DRAW
+			else:
+				# higher card
+				self.highestCard = player.card
+				self.result = player.team
+	
+	
+	
+	def execute(self):
+		# reset variables
+		self.start()
+		
+		# 4 turns
+		for i in range(Game.MAXIMUM_PLAYERS):
+			# getting the player info
+			playerNumber = (i + self.firstPlayerNumber)%Game.MAXIMUM_PLAYERS
+			player = self.game.playerList[playerNumber]
+			
+			# play of the player
+			player.play()
+			
+			'''
+			if player.truco:
+				# To do
+				# response = self.game.trucoResponse(currentPlayer.team)
+				pass
+			'''
+			
+			# get the drawn card
+			self.cardList[playerNumber] = player.card
+			
+			# getting the vaza highest card and its player
+			self.updateResult(playerNumber, player)
+		
+		# set the first player to play in the next vaza
+		self.firstPlayerNumber = self.bestPlayerNumber
+		
+		# return the result of the vaza
+		return self.result
+		
+		
+		
+		
+
+
+
+# ----------------
+		
+
+
+# --| Mao |-- Class
+# Description: mao of truco
+class Mao:
+	def __init__(self, game):
+		self.game = game
+		
+		self.value = 1
 		self.vira = None
-		self.shufflerNumber = 0
+		self.result = self.execute()
 	
 	
 	
-	def resetMao(self):
-		self.maoValue = 1
-		self.vira = 0
-	
-	
-	
-	def resetVara(self):
-		self.firstPlayerNumber = 0
-		self.cardsOnBoard = [None, None, None, None]
-	
-	
-	
-	def mao(self):
-		self.resetMao()
-		shuffler = self.playerList[self.shufflerNumber]
+	# executes the mao
+	def execute(self):
+		# shuffling the deck and distributing cards
+		deck = self.game.deck
+		deck.shuffle()
 		
-		vaza1 = self.vaza(False)
+		
+		playerList = self.game.playerList
+		for player in playerList:
+			player.getCards()
+		
+		self.vira = deck.takeCard()
+		
+		
+		
+		# creating the vaza
+		firstPlayerNumber = (self.game.shufflerNumber + 1)%Game.MAXIMUM_PLAYERS
+		self.vaza = Vaza(self.game, firstPlayerNumber)
+		
+		
+		# ----------------
+		# start of the mao
+		# ----------------
+		vaza1 = self.vaza.execute()
+		
 		# refused truco
-		if self.refused:
+		if self.vaza.refused:
 			return vaza1
 		
 		
 		# points cases
 		if vaza1 == TeamPoint.DRAW:
+			# ----------------
 			# 1 draw
-			vaza2 = self.vaza(False)
+			# ----------------
+			vaza2 = self.vaza.execute()
+			
 			# refused truco
-			if self.refused:
+			if self.vaza.refused:
 				return vaza2
 			
 			if vaza2 == TeamPoint.DRAW:
+				# ----------------
 				# 2 draws
-				vaza3 = self.vaza(False)
+				# ----------------
+				vaza3 = self.vaza.execute()
+				
 				# refused truco
-				if self.refused:
+				if self.vaza.refused:
 					return vaza3
 				
 				if vaza3 == TeamPoint.DRAW:
+					# ----------------
 					# 5º case: 3 draws
-					return shuffler.team
+					# ----------------
+					shufflerPlayer = Game.playerList[Game.shufflerNumber]
+					return shufflerPlayer.team
 				else:
+					# ----------------
 					# 4º case: 2 draws, 1 win
+					# ----------------
 					return vaza3
 			else:
+				# ----------------
 				# 1º case: 1 draw, 1 win
+				# ----------------
 				return vaza2
 		else:
+			# ----------------
 			# 1 win
-			vaza2 = self.vaza(True)
+			# ----------------
+			self.vaza.canHide = True
+			vaza2 = self.vaza.execute()
+			
 			# refused truco
-			if self.refused:
+			if self.vaza.refused:
 				return vaza2
 			
 			if (
 				vaza1 == TeamPoint.RED and vaza2 == TeamPoint.BLUE or
 				vaza1 == TeamPoint.BLUE and vaza2 == TeamPoint.RED
 			):
+				# ----------------
 				# 1 win, 1 lose
-				vaza3 = self.vaza(True)
+				# ----------------
+				vaza3 = self.vaza.execute()
+				
 				# refused truco
-				if self.refused:
+				if self.vaza.refused:
 					return vaza3
 				
 				if vaza3 == TeamPoint.DRAW:
-					# 1 win, 1 lose, 1 draw
+					# ----------------
+					# 3º case: 1 win, 1 lose, 1 draw
+					# ----------------
 					return vaza1
 				else:
+					# ----------------
 					# 1 win, 1 lose, 1 win
+					# ----------------
 					return vaza3
 			else:
+				# ----------------
+				# 2º case: 2 wins or 1 win, 1 draw
+				# ----------------
 				return vaza1
+
+
+
+# ----------------
+
+
+
+# --| Game |-- Class
+# Description: class where the whole game will be running
+class Game:
+	# constants
+	MAXIMUM_PLAYERS = 4
+	MAXIMUM_SCORE = 12
+	
+	def __init__(self):
+		# players
+		self.playerList = []
+		self.shufflerNumber = random.randint(0, 3)
+		self.deck = Deck()
+		
+		# game status
+		self.redTeamScore = 0
+		self.blueTeamScore = 0
+		
+		# mao
+		self.mao = None
 	
 	
 	
+	def startGame(self):
+		self.connectPlayers()
+		
+		# start things up
+		self.redTeamScore = 0
+		self.blueTeamScore = 0
+		self.shufflerNumber = random.randint(0, 3)
+		
+		# do the maos
+		while self.redTeamScore < Game.MAXIMUM_SCORE and self.blueTeamScore < Game.MAXIMUM_SCORE:
+			self.mao = Mao(self)
+			
+			if self.mao.result == TeamPoint.RED:
+				self.redTeamScore += self.mao.points
+			elif self.mao.result == TeamPoint.BLUE:
+				self.blueTeamScore += self.mao.points
+			
+	
+	
+	
+	def connectPlayers():
+		pass
+	'''
+	def resetGame(self):
+		# players
+		self.playerList = []
+		self.shufflerNumber = 0
+		
+		# game status
+		self.redTeamPoints = 0
+		self.blueTeamPoints = 0
+		
+		# mao
+		self.currentMao = None
+	'''	
+	
+	
+	
+	'''
 	def vaza(self, hideAllowed):
 		point = TeamPoint.DRAW						# point of the vaza to be returned
 		highestCard = None							# highest card of the vaza
@@ -271,6 +487,7 @@ class Truco:
 						# higher card
 						point = currentPlayer.team
 						highestCard = card
+		'''
 		
 		
 		
@@ -313,7 +530,7 @@ if __name__ == "__main__":
 			print(dictTest)
 			sendJson(conn, dictTest)
 	'''
-	trucao = Truco()
+	trucao = Game()
 	while(True):
 		'''
 		printDict = {
