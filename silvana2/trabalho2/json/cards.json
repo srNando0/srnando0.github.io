@@ -1,0 +1,4 @@
+{
+	"values": ["4", "5", "6", "7", "queen", "jack", "king", "ace", "2", "3"],
+	"suits": ["_of_diamonds", "_of_spades", "_of_hearts", "_of_clubs"]
+}
