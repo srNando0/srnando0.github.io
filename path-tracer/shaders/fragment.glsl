@@ -94,7 +94,7 @@ Light lights[3];
 int lightCounter = 0;
 float lightTotalArea = 0.0;
 
-Material materials[4];
+Material materials[5];
 int materialCounter = 0;
 
 
