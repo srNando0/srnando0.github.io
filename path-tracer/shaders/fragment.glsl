@@ -103,20 +103,20 @@ int materialCounter = 0;
 	Random
 */
 // Random number generator (input: 2, output: 1)
-vec4 pcg4(uint4 v) {
+vec4 pcg4(uvec4 v) {
     v = v * 1664525u + 1013904223u;   
 
-    v.x += v.y*v.w;
-    v.y += v.z*v.x;
-    v.z += v.x*v.y;
-    v.w += v.y*v.z;
+    v.x += v.y * v.w;
+    v.y += v.z * v.x;
+    v.z += v.x * v.y;
+    v.w += v.y * v.z;
 
-    v ^= v>>16u;
+    v ^= v >> 16u;
 
-    v.x += v.y*v.w;
-    v.y += v.z*v.x;
-    v.z += v.x*v.y;
-    v.w += v.y*v.z;
+    v.x += v.y * v.w;
+    v.y += v.z * v.x;
+    v.z += v.x * v.y;
+    v.w += v.y * v.z;
 
     return (1.0 / 4294967296.0) * vec4(v);
 }
