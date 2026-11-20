@@ -462,12 +462,12 @@ void createScene() {
 
 	// Dielectric Material
 	int dielectricMaterial = createMaterial(MATERIAL_SPECULAR);
-	materials[dielectricMaterial].parameters[0] = 0.3;	// roughness
+	materials[dielectricMaterial].parameters[0] = 0.2;	// roughness
 	materials[dielectricMaterial].parameters[1] = 0.5;	// dielectric
 
 	int dielectricMaterial2 = createMaterial(MATERIAL_SPECULAR);
 	materials[dielectricMaterial2].parameters[0] = 0.5;	// roughness
-	materials[dielectricMaterial2].parameters[1] = 0.3;	// dielectric
+	materials[dielectricMaterial2].parameters[1] = 0.1;	// dielectric
 
 	// Metal Material
 	int metalMaterial = createMaterial(MATERIAL_SPECULAR);
@@ -548,7 +548,7 @@ void createScene() {
 	);
 	createObject(
 		OBJ_AABB,
-		vec3(0.0, 1.0, 0.1),
+		vec3(0.0, 1.0, 0.0),
 		diffuseMaterial
 	);
 
