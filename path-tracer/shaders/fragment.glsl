@@ -94,7 +94,7 @@ Light lights[3];
 int lightCounter = 0;
 float lightTotalArea = 0.0;
 
-Material materials[5];
+Material materials[4];
 int materialCounter = 0;
 
 
@@ -462,12 +462,8 @@ void createScene() {
 
 	// Dielectric Material
 	int dielectricMaterial = createMaterial(MATERIAL_SPECULAR);
-	materials[dielectricMaterial].parameters[0] = 0.2;	// roughness
-	materials[dielectricMaterial].parameters[1] = 0.5;	// dielectric
-
-	int dielectricMaterial2 = createMaterial(MATERIAL_SPECULAR);
-	materials[dielectricMaterial2].parameters[0] = 0.5;	// roughness
-	materials[dielectricMaterial2].parameters[1] = 0.1;	// dielectric
+	materials[dielectricMaterial].parameters[0] = 0.3;	// roughness
+	materials[dielectricMaterial].parameters[1] = 0.3;	// dielectric
 
 	// Metal Material
 	int metalMaterial = createMaterial(MATERIAL_SPECULAR);
@@ -485,7 +481,7 @@ void createScene() {
 	createObject(
 		OBJ_SPHERE,
 		vec3(1.0, 0.0, 0.0),
-		dielectricMaterial2
+		dielectricMaterial
 	);
 
 	// Sphere 1
