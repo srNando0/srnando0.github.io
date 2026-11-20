@@ -168,5 +168,5 @@ void main() {
 
 
 	color = linear2Gamma(color);
-	fragColor = vec4(color, 1.0);
+	fragColor = vec4(color.gbr, 1.0);
 }
