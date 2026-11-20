@@ -94,7 +94,7 @@ Light lights[3];
 int lightCounter = 0;
 float lightTotalArea = 0.0;
 
-Material materials[4];
+Material materials[5];
 int materialCounter = 0;
 
 
@@ -465,6 +465,10 @@ void createScene() {
 	materials[dielectricMaterial].parameters[0] = 0.3;	// roughness
 	materials[dielectricMaterial].parameters[1] = 0.3;	// dielectric
 
+	int dielectricMaterial2 = createMaterial(MATERIAL_SPECULAR);
+	materials[dielectricMaterial2].parameters[0] = 0.2;	// roughness
+	materials[dielectricMaterial2].parameters[1] = 0.8;	// dielectric
+
 	// Metal Material
 	int metalMaterial = createMaterial(MATERIAL_SPECULAR);
 	materials[metalMaterial].parameters[0] = 0.1;	// roughness
@@ -509,7 +513,7 @@ void createScene() {
 	createObject(
 		OBJ_AABB,
 		vec3(1.0, 1.0, 1.0),
-		dielectricMaterial
+		dielectricMaterial2
 	);
 
 	// Plane up
