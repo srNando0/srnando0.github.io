@@ -467,7 +467,7 @@ void createScene() {
 
 	// Metal Material
 	int metalMaterial = createMaterial(MATERIAL_SPECULAR);
-	materials[metalMaterial].parameters[0] = 0.3;	// roughness
+	materials[metalMaterial].parameters[0] = 0.1;	// roughness
 	materials[metalMaterial].parameters[1] = -1.0;	// dielectric
 
 
