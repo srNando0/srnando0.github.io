@@ -56,6 +56,62 @@ vec3 doTonemapping(vec3 color, float r) {
 
 
 /*
+    Matrices
+*/
+// RGB
+const mat3 SRGB_TO_XYZ = mat3(
+    vec3( 0.41239079926595948,  0.21263900587151036,  0.01933081871559185),
+    vec3( 0.35758433938387796,  0.71516867876775593,  0.11919477979462599),
+    vec3( 0.18048078840183429,  0.07219231536073372,  0.95053215224966058)
+);
+
+const mat3 XYZ_TO_SRGB = mat3(
+    vec3( 3.24096994190452134, -0.96924363628087983,  0.05563007969699361),
+    vec3(-1.53738317757009346,  1.87596750150772067, -0.20397695888897656),
+    vec3(-0.49861076029300328,  0.04155505740717561,  1.05697151424287856)
+);
+
+const mat3 SRGB_TO_REC2020 = mat3(
+    vec3( 0.62740389593469908,  0.06909728935823208,  0.01639143887515028),
+    vec3( 0.32928303837788369,  0.91954039507545875,  0.08801330787722576),
+    vec3( 0.04331306568741723,  0.01136231556630918,  0.89559525324762397)
+);
+
+//const mat3 REC2020_TO_SRGB = mat3(
+//    vec3( 1.66049100210843440, -0.12455047452159074, -0.01815076335490530),
+//    vec3(-0.58764113878854953,  1.13289989712596022, -0.10057889800800738),
+//    vec3(-0.07284986331988488, -0.00834942260436948,  1.11872966136291268)
+//);
+
+
+// Oklab
+const mat3 OKLAB_M1 = mat3(
+    vec3( 0.8189330101,  0.0329845436,  0.0482003018),
+    vec3( 0.3618667424,  0.9293118715,  0.2643662691),
+    vec3(-0.1288597137,  0.0361456387,  0.6338517070)
+);
+
+const mat3 OKLAB_M1_INV = mat3(
+    vec3( 1.227013851103521, -0.040580178423281, -0.076381284505707),
+    vec3(-0.557799980651822,  1.112256869616830, -0.421481978418013),
+    vec3( 0.281256148966468, -0.071676678665601,  1.586163220440795)
+);
+
+
+const mat3 OKLAB_M2 = mat3(
+    vec3( 0.2104542553,  1.9779984951,  0.0259040371),
+    vec3( 0.7936177850, -2.4285922050,  0.7827717662),
+    vec3(-0.0040720468,  0.4505937099, -0.8086757660)
+);
+
+const mat3 OKLAB_M2_INV = mat3(
+    vec3( 0.999999998450520,  1.000000008881761,  1.000000054672411),
+    vec3( 0.396337792173768, -0.105561342323656, -0.089484182094966),
+    vec3( 0.215803758060759, -0.063854174771706, -1.291485537864092)
+);
+
+
+/*
     Tone mapping functions
 */
 float compute_peak(const vec3 srgb) {
@@ -67,6 +123,11 @@ vec3 threshold_bloom(vec3 srgb) {
     const float peak = max(compute_peak(srgb), 1.0);
     srgb *= (peak - 1.0) / peak;
     return srgb;
+}
+
+float decay_function(const float x) {
+     return 1.0 / (1.0 + x);
+    //return exp(-x);
 }
 
 float translated_reinhard(float value, const float slope, const float upper_limit) {
@@ -105,53 +166,9 @@ vec3 neutral_tone_mapping(vec3 srgb, const float slope, const float desaturation
 }
 
 
-/*
-    Debanding
-*/
-vec3 from_linear(const vec3 linear_rgb) {
-    const bvec3 cutoff = lessThan(linear_rgb.rgb, vec3(0.0031308));
-    const vec3 higher = vec3(1.055) * pow(linear_rgb.rgb, vec3(1.0 / 2.4)) - vec3(0.055);
-    const vec3 lower = linear_rgb.rgb * vec3(12.92);
-    return mix(higher, lower, cutoff);
-}
-
-vec3 to_linear(const vec3 srgb) {
-    const bvec3 cutoff = lessThan(srgb.rgb, vec3(0.04045));
-    const vec3 higher = pow((srgb.rgb + vec3(0.055)) / vec3(1.055), vec3(2.4));
-    const vec3 lower = srgb.rgb / vec3(12.92);
-    return mix(higher, lower, cutoff);
-}
-
-vec3 interleaved_gradient_noise_3(const vec2 uv) {
-    const float phi_inv = 0.61803398875;
-    const vec3 rgb_terms = vec3(6.029, -6.029, 2.518);
-    return fract(phi_inv * (uv.x + uv.y * rgb_terms));
-}
-
-vec3 dithering_2_colors(const vec3 linear, const float count) {
-    const vec3 srgb = from_linear(linear);
-
-    // Compute upper and lower bounds
-    vec3 lower = floor(count * srgb);
-    vec3 upper = lower + 1.0;
-
-    // Convert it to linear sRGB so we get a proper gradient
-    upper = to_linear(upper / count);
-    lower = to_linear(lower / count);
-
-    // Add noise
-    const vec2 p = vec2(gl_GlobalInvocationID.xy);
-    const vec3 edge = (linear - lower) / (upper - lower);
-    const vec3 noise_step = step(1.0 - edge, interleaved_gradient_noise_3(p));
-    return mix(lower, upper, noise_step);
-}
-
-
-
 void main() {
 	vec4 pixel = texture(tex, uv);
 	vec3 color = decodeColor(pixel);
-
 
 
 	//color = doTonemapping(color, ROOT);
@@ -162,11 +179,6 @@ void main() {
     color = oklab_chroma_fallback(color);
 
 
-    // Add noise
-    const float count = 256.0;
-    color = dithering_2_colors(color, count - 1.0);
-
-
 	color = linear2Gamma(color);
-	fragColor = vec4(color.gbr, 1.0);
+	fragColor = vec4(color, 1.0);
 }
