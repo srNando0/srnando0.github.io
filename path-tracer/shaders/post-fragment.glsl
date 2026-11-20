@@ -263,7 +263,7 @@ vec3 bloom_special_mixing(vec3 bloom, vec3 color, float color_scale, float dimmi
 
 void main() {
 	vec4 pixel = texture(tex, uv);
-	vec3 color = decodeColor(pixel);
+	vec3 color = REC2020_TO_SRGB * decodeColor(pixel);
 
 
 	//color = doTonemapping(color, ROOT);
