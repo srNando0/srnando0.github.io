@@ -536,7 +536,7 @@ void createScene() {
 	);
 	createObject(
 		OBJ_AABB,
-		vec3(1.0, 0.0, 0.0),
+		vec3(1.0, -0.108665, -0.006716),
 		diffuseMaterial
 	);
 
@@ -548,7 +548,7 @@ void createScene() {
 	);
 	createObject(
 		OBJ_AABB,
-		vec3(0.0, 1.0, 0.0),
+		vec3(0.0, 1.0, 0.1),
 		diffuseMaterial
 	);
 
