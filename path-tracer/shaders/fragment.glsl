@@ -103,55 +103,43 @@ int materialCounter = 0;
 	Random
 */
 // Random number generator (input: 2, output: 1)
-/*float hash21(uvec2 q) {
-	uvec2 m = uvec2(HASH_NUMBER_1, HASH_NUMBER_2);
-	q *= m;
-	uint n = (q.x^q.y)*HASH_NUMBER_3;
-	return (1.0/float(0xffffffffU))*float(n);
-}*/
-// Random number generator (input: 3, output: 1)
-float hash31(uvec3 q) {
-	uvec3 m = uvec3(HASH_NUMBER_1, HASH_NUMBER_2, HASH_NUMBER_3);
-	q *= m;
-	uint n = (q.x^q.y^q.z)*m.x;
-	return (1.0/float(0xffffffffU))*float(n);
-}
+vec4 pcg4(uint4 v) {
+    v = v * 1664525u + 1013904223u;   
 
-// Random number generator (input: 3, output: 2)
-vec2 hash32(uvec3 q) {
-	uvec3 m = uvec3(HASH_NUMBER_1, HASH_NUMBER_2, HASH_NUMBER_3);
-	q *= m;
-	uvec2 n = (q.x^q.y^q.z)*m.xy;
-	return (1.0/float(0xffffffffU))*vec2(n);
-}
+    v.x += v.y*v.w;
+    v.y += v.z*v.x;
+    v.z += v.x*v.y;
+    v.w += v.y*v.z;
 
-// Random number generator (input: 3, output: 3)
-vec3 hash33(uvec3 q) {
-	uvec3 m = uvec3(HASH_NUMBER_1, HASH_NUMBER_2, HASH_NUMBER_3);
-	q *= m;
-	uvec3 n = (q.x^q.y^q.z)*m;
-	return (1.0/float(0xffffffffU))*vec3(n);
+    v ^= v>>16u;
+
+    v.x += v.y*v.w;
+    v.y += v.z*v.x;
+    v.z += v.x*v.y;
+    v.w += v.y*v.z;
+
+    return (1.0 / 4294967296.0) * vec4(v);
 }
 
 
 
 // xi \in [0, 1)
 float xi1() {
-	uvec3 hashInput = uvec3(gl_FragCoord.xy, SEED_MATRIX*(uViewMatrix[1][1] + 1.0)) + seed + uTime;
+	uvec4 hashInput = uvec4(gl_FragCoord.xy, SEED_MATRIX*(uViewMatrix[1][1] + 1.0), seed + uTime);
 	seed++;
-	return hash31(hashInput);
+	return pcg4(hashInput).x;
 }
 
 vec2 xi2() {
-	uvec3 hashInput = uvec3(gl_FragCoord.xy, SEED_MATRIX*(uViewMatrix[1][1] + 1.0)) + seed + uTime;
+	uvec4 hashInput = uvec4(gl_FragCoord.xy, SEED_MATRIX*(uViewMatrix[1][1] + 1.0), seed + uTime);
 	seed++;
-	return hash32(hashInput);
+	return pcg4(hashInput).xy;
 }
 
 vec3 xi3() {
-	uvec3 hashInput = uvec3(gl_FragCoord.xy, SEED_MATRIX*(uViewMatrix[1][1] + 1.0)) + seed + uTime;
+	uvec4 hashInput = uvec4(gl_FragCoord.xy, SEED_MATRIX*(uViewMatrix[1][1] + 1.0), seed + uTime);
 	seed++;
-	return hash33(hashInput);
+	return pcg4(hashInput).xyz;
 }
 
 
