@@ -29,8 +29,8 @@ uniform sampler2D tex;
 
 // Rendering
 #define ERROR 0.0001
-#define MINIMUM_DEPTH 2
-#define GEOMETRIC_MEAN 2.0
+#define MINIMUM_DEPTH 4
+#define GEOMETRIC_MEAN 4.0
 
 // Objects
 #define OBJ_SPHERE 0
