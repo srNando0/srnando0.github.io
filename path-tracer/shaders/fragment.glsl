@@ -509,7 +509,7 @@ void createScene() {
 	createObject(
 		OBJ_AABB,
 		vec3(1.0, 1.0, 1.0),
-		metalMaterial
+		dielectricMaterial
 	);
 
 	// Plane up
