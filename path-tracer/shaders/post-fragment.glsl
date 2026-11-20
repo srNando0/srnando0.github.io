@@ -114,13 +114,13 @@ const mat3 OKLAB_M2_INV = mat3(
 /*
     Color function
 */
-vec3 xyz_to_oklab(const vec3 xyz) {
+vec3 xyz_to_oklab(vec3 xyz) {
     vec3 lms = OKLAB_M1 * xyz;
     lms = sign(lms) * pow(abs(lms), vec3(1.0 / 3.0));
     return OKLAB_M2 * lms;
 }
 
-vec3 oklab_to_xyz(const vec3 lab) {
+vec3 oklab_to_xyz(vec3 lab) {
     vec3 lms = OKLAB_M2_INV * lab;
     lms = lms * lms * lms;
     return OKLAB_M1_INV * lms;
@@ -129,7 +129,7 @@ vec3 oklab_to_xyz(const vec3 lab) {
 // Finds the maximum saturation possible for a given hue that fits in sRGB
 // Saturation here is defined as S = C/L
 // a and b must be normalized so a^2 + b^2 == 1
-float compute_max_saturation(const vec2 ab) {
+float compute_max_saturation(vec2 ab) {
     // Max saturation will be when one of r, g or b goes below zero.
 
     // Select different coefficients depending on which component goes below zero first
@@ -154,34 +154,34 @@ float compute_max_saturation(const vec2 ab) {
     }
 
     // Approximate max saturation using a polynomial:
-    const float S = k_0 + dot(k_1234, vec4(ab, ab.x * ab));
+    float S = k_0 + dot(k_1234, vec4(ab, ab.x * ab));
 
     // Do one step Halley's method to get closer
     // this gives an error less than 10e6, except for some blue hues where the dS/dh is close to infinite
     // this should be sufficient for most applications, otherwise do two/three steps
-    const vec3 k_lms = mat2x3(
+    vec3 k_lms = mat2x3(
         vec3( 0.3963377774, -0.1055613458, -0.0894841775),
         vec3( 0.2158037573, -0.0638541728, -1.2914855480)
     ) * ab;
 
-    const vec3 lms_ = 1.0 + S * k_lms;
-    const vec3 lms = lms_ * lms_ * lms_;
-    const vec3 lms_dS = 3.0 * k_lms * lms_ * lms_;
-    const vec3 lms_dS2 = 6.0 * k_lms * k_lms * lms_;
+    vec3 lms_ = 1.0 + S * k_lms;
+    vec3 lms = lms_ * lms_ * lms_;
+    vec3 lms_dS = 3.0 * k_lms * lms_ * lms_;
+    vec3 lms_dS2 = 6.0 * k_lms * k_lms * lms_;
 
-    const vec3 f = w_lms * mat3(lms, lms_dS, lms_dS2);
+    vec3 f = w_lms * mat3(lms, lms_dS, lms_dS2);
 
     return S - f.x * f.y / (f.y * f.y - 0.5 * f.x * f.z);
 }
 
-vec3 oklab_chroma_fallback(const vec3 srgb) {
+vec3 oklab_chroma_fallback(vec3 srgb) {
     // Oklch
     vec3 lab = xyz_to_oklab(SRGB_TO_XYZ * srgb);
-    const float chroma = length(lab.yz);
-    const vec2 hue = normalize(lab.yz);
+    float chroma = length(lab.yz);
+    vec2 hue = normalize(lab.yz);
 
     // Clamp chroma
-    const float max_chroma = lab.x * compute_max_saturation(hue);
+    float max_chroma = lab.x * compute_max_saturation(hue);
     lab.yz = min(chroma, max_chroma) * hue;
 
     return XYZ_TO_SRGB * oklab_to_xyz(lab);
@@ -191,23 +191,23 @@ vec3 oklab_chroma_fallback(const vec3 srgb) {
 /*
     Tone mapping functions
 */
-float compute_peak(const vec3 srgb) {
-    const vec3 rec2020 = SRGB_TO_REC2020 * srgb;
+float compute_peak(vec3 srgb) {
+    vec3 rec2020 = SRGB_TO_REC2020 * srgb;
     return max(max(rec2020.r, rec2020.g), rec2020.b);
 }
 
 vec3 threshold_bloom(vec3 srgb) {
-    const float peak = max(compute_peak(srgb), 1.0);
+    float peak = max(compute_peak(srgb), 1.0);
     srgb *= (peak - 1.0) / peak;
     return srgb;
 }
 
-float decay_function(const float x) {
+float decay_function(float x) {
      return 1.0 / (1.0 + x);
     //return exp(-x);
 }
 
-float translated_reinhard(float value, const float slope, const float upper_limit) {
+float translated_reinhard(float value, float slope, float upper_limit) {
     /*
         Translated Reinhard
         /            / S(x - U) \\
@@ -219,8 +219,8 @@ float translated_reinhard(float value, const float slope, const float upper_limi
     return value;
 }
 
-vec3 neutral_tone_mapping(vec3 srgb, const float slope, const float desaturation) {
-    const float peak = compute_peak(srgb);
+vec3 neutral_tone_mapping(vec3 srgb, float slope, float desaturation) {
+    float peak = compute_peak(srgb);
 
     // Color not bright enough
     if (peak <= 1.0)
@@ -231,7 +231,7 @@ vec3 neutral_tone_mapping(vec3 srgb, const float slope, const float desaturation
 
     // Desaturate using Oklab
     const vec3 white_lab = vec3(1.0, 0.0, 0.0);
-    const float lambda = decay_function(desaturation * (peak - 1.0));
+    float lambda = decay_function(desaturation * (peak - 1.0));
     vec3 lab = xyz_to_oklab(SRGB_TO_XYZ * srgb);
     lab = mix(white_lab, lab, lambda);
     srgb = XYZ_TO_SRGB * oklab_to_xyz(lab);
@@ -242,9 +242,9 @@ vec3 neutral_tone_mapping(vec3 srgb, const float slope, const float desaturation
     return srgb;
 }
 
-vec3 bloom_special_mixing(vec3 bloom, vec3 color, const float color_scale, const float dimming_rate) {
-    const float color_peak = max(compute_peak(color), 1.0);
-    const float bloom_peak = compute_peak(bloom);
+vec3 bloom_special_mixing(vec3 bloom, vec3 color, float color_scale, float dimming_rate) {
+    float color_peak = max(compute_peak(color), 1.0);
+    float bloom_peak = compute_peak(bloom);
 
     // Add very bright colors to bloom
     bloom += color_scale * threshold_bloom(color);
@@ -253,7 +253,7 @@ vec3 bloom_special_mixing(vec3 bloom, vec3 color, const float color_scale, const
     color /= color_peak;
 
     // Dimming factor
-    const float dimmer = decay_function(dimming_rate * bloom_peak);
+    float dimmer = decay_function(dimming_rate * bloom_peak);
 
     // Dim color as the bloom gets brighter
     return dimmer * color + bloom;
